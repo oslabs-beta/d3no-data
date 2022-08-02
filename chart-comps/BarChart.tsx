@@ -1,10 +1,7 @@
 /** @jsx h */
-import { h } from "../mod.ts";
-import { Fragment } from "../mod.ts";
-import { useEffect } from "../mod.ts";
-import { d3 } from "../mod.ts";
+import { h, Fragment, useEffect, d3 } from "../mod.ts";
 
-export default function BarChart() {
+export function BarChart() {
   useEffect(() => {
     const dataset: number[] = [];
     for (let i = 0; i < 7; i++) {
