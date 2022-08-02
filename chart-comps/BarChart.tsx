@@ -1,6 +1,7 @@
 /** @jsx h */
-import { h, Fragment } from "../mod.ts";
-import { useEffect, useState } from "../mod.ts";
+import { h } from "../mod.ts";
+import { Fragment } from "../mod.ts";
+import { useEffect } from "../mod.ts";
 import { d3 } from "../mod.ts";
 
 export default function BarChart() {
@@ -10,9 +11,14 @@ export default function BarChart() {
       dataset.push(Math.floor(Math.random() * 100));
     }
     const svgWidth = 400;
-    const svgHeight = 100;
-    const barPadding = 20;
-    const barWidth = svgWidth / dataset.length;
+    const svgHeight = 600;
+    const barPadding = 5;
+    const barWidth = svgWidth / dataset.length - 10;
+
+    const xDataSet: number[] = [];
+    for (let i = 0; i < 7; i++) {
+      xDataSet.push(i);
+    }
 
     const svg = d3
       .select("svg")
@@ -22,29 +28,27 @@ export default function BarChart() {
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(dataset)])
-      .range([0, svgHeight]);
+      .range([svgHeight - 30, 0]); // 30 represents the padding on top
 
     const xScale = d3
       .scaleLinear()
-      .domain([0, d3.max(dataset)])
+      .domain([0, d3.max(xDataSet)])
       .range([0, svgWidth]);
 
-    const barChart = svg
+    svg
       .selectAll("rect")
       .data(dataset)
       .enter()
       .append("rect")
-      .attr("y", function (d: number): number {
-        return svgHeight - yScale(d);
+      .attr("x", function (d: number, i: number): number {
+        return barWidth * i + 30;
+      })
+      .attr("width", barWidth - barPadding)
+      .attr("y", function (d: number, i: number): number {
+        return svgHeight - yScale(d) - 30;
       })
       .attr("height", function (d: number): number {
         return yScale(d);
-      })
-      .attr("width", barWidth - barPadding)
-      .attr("transform", function (d: number, i: number) {
-        console.log("i", i, "barWidth", barWidth);
-        const translate = [barWidth * i];
-        return "translate(" + translate + ")";
       });
 
     const text = svg
@@ -56,17 +60,30 @@ export default function BarChart() {
         return d;
       })
       .attr("y", function (d: number, i: number): number {
-        return svgHeight - yScale(d) - 2;
+        return svgHeight;
       })
       .attr("x", function (d: number, i: number): number {
-        return barWidth * i;
+        return barWidth * i + 30;
       })
-      .attr("fill", "blue");
+      .attr("font-size", 12)
+      .attr("fill", "black");
+
+    const yAxis = d3.axisLeft(yScale);
+
+    svg
+      .append("g")
+      .call(yAxis)
+      .attr("transform", "translate(" + 25 + ",0)");
   }, []);
 
   return (
     <Fragment>
-      <svg className="bar-chart"></svg>
+      <svg
+        style={{
+          padding: 30,
+        }}
+        className="bar-chart"
+      ></svg>
     </Fragment>
   );
 }
