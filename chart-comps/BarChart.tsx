@@ -1,86 +1,101 @@
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
 
-export function BarChart() {
-  useEffect(() => {
-    const dataset: number[] = [];
-    for (let i = 0; i < 7; i++) {
-      dataset.push(Math.floor(Math.random() * 100));
+interface barChartData {
+  width: number;
+  height: number;
+  data: number[];
+  label: string[];
+}
+
+export default function BarChart() {
+  const myData: number[] = [];
+  const label: string[] = [];
+  const numData = 20;
+
+  function updateData() {
+    for (let i = 0; i < numData; i++) {
+      myData.push(Math.floor(Math.random() * 100));
+      label.push(i + "");
     }
-    const svgWidth = 400;
-    const svgHeight = 600;
+  }
+
+  function updateChart() {
+    const yAxisSize = 22;
+    const xAxisSize = 22;
+    const width = 800; // width - yAxisSize
+    const height = 600;
+    d3.select(".bar-chart").attr("width", width).attr("height", height);
+
+    // need to account for padding and size for x and y axes
+    // this is full width of the chart
+
     const barPadding = 5;
-    const barWidth = svgWidth / dataset.length - 10;
+    const barPaddingBottom = 5;
+    const chartHeightPadding = 22;
+    const chartWidthPadding = 40;
+    const barsPaddingFromYAxis = 3;
 
-    const xDataSet: number[] = [];
-    for (let i = 0; i < 7; i++) {
-      xDataSet.push(i);
-    }
-
-    const svg = d3
-      .select("svg")
-      .attr("width", svgWidth)
-      .attr("height", svgHeight);
-
+    // scale function for y axis
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(dataset)])
-      .range([svgHeight - 30, 0]); // 30 represents the padding on top
+      .domain([0, d3.max(myData)])
+      .range([height - xAxisSize - chartHeightPadding, 0]);
 
+    // scale function for x axis
     const xScale = d3
-      .scaleLinear()
-      .domain([0, d3.max(xDataSet)])
-      .range([0, svgWidth]);
+      .scaleBand()
+      .domain(label)
+      .range([0, width - yAxisSize - chartWidthPadding + barsPaddingFromYAxis]);
 
-    svg
+    const barWidth = (width - yAxisSize - chartWidthPadding) / numData;
+
+    const bars = d3
+      .select(".bars")
       .selectAll("rect")
-      .data(dataset)
-      .enter()
-      .append("rect")
-      .attr("x", function (d: number, i: number): number {
-        return barWidth * i + 30;
-      })
+      .data(myData)
+      .join("rect")
       .attr("width", barWidth - barPadding)
-      .attr("y", function (d: number, i: number): number {
-        return svgHeight - yScale(d) - 30;
-      })
-      .attr("height", function (d: number): number {
+      .attr("height", function (d: number, i: number): number {
         return yScale(d);
+      })
+      .attr("x", function (d: number, i: number): number {
+        return barWidth * i + yAxisSize + barsPaddingFromYAxis;
+      })
+      .attr("y", function (d: number): number {
+        return height - yScale(d) - xAxisSize - barPaddingBottom;
       });
 
-    const text = svg
-      .selectAll("text")
-      .data(dataset)
-      .enter()
-      .append("text")
-      .text(function (d: number): number {
-        return d;
-      })
-      .attr("y", function (d: number, i: number): number {
-        return svgHeight;
-      })
-      .attr("x", function (d: number, i: number): number {
-        return barWidth * i + 30;
-      })
-      .attr("font-size", 12)
-      .attr("fill", "black");
+    const yAxis = d3.axisLeft(yScale).ticks(10);
+    const xAxis = d3.axisBottom(xScale);
 
-    const yAxis = d3.axisLeft(yScale);
+    const chartContainer = d3.select(".bar-chart g");
 
-    svg
+    chartContainer
       .append("g")
       .call(yAxis)
-      .attr("transform", "translate(" + 25 + ",0)");
+      // have to make this data to show for charts dynamic
+      .attr("transform", `translate(${yAxisSize}, ${chartHeightPadding})`);
+
+    chartContainer
+      .append("g")
+      .call(xAxis)
+      .attr("transform", `translate(${yAxisSize}, ${height - xAxisSize})`);
+  }
+
+  useEffect(() => {
+    updateData();
+    updateChart();
   }, []);
 
   return (
     <Fragment>
-      <svg
-        style={{
-          padding: 30,
-        }}
-        className="bar-chart"
-      ></svg>
+      <svg class="bar-chart">
+        {/* grouping for bars and axes */}
+        <g>
+          <g class="bars"></g>
+        </g>
+      </svg>
     </Fragment>
   );
 }
