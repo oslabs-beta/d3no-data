@@ -14,7 +14,7 @@ interface barChartData {
 export default function BarChart() {
   const myData: number[] = [];
   const label: string[] = [];
-  const numData = 7;
+  const numData = 12;
 
   function updateData() {
     for (let i = 0; i < numData; i++) {
@@ -26,12 +26,11 @@ export default function BarChart() {
   function updateChart() {
     const yAxisSize = 22;
     const xAxisSize = 22;
-    const width = 800; // width - yAxisSize
-    const height = 600;
-    const barPadding = 5;
+    const width = 700; // width - yAxisSize
+    const height = 700;
+    const barPadding = 5; //
     const barPaddingBottom = 5;
     const chartHeightPadding = 22;
-    const barsPaddingFromYAxis = 3;
 
     d3.select(".bar-chart").attr("width", width).attr("height", height);
 
@@ -40,66 +39,71 @@ export default function BarChart() {
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(myData)])
-      .range([0, height - xAxisSize - chartHeightPadding]);
+      .range([height - xAxisSize - chartHeightPadding, 0]);
 
     // scale function for x axis
     const xScale = d3
       .scaleBand()
       .domain(label)
-      .range([0, width - yAxisSize * 2 + barsPaddingFromYAxis]);
+      .range([0, width - yAxisSize * 2 + barPaddingBottom]);
 
     const barWidth = (width - yAxisSize * 2) / numData;
 
     // add a tool tip
-    const toolTip = d3
-      .select(".chart-container")
-      .append("div")
-      .style("opacity", 0)
-      .classed("tooltip", true)
-      .style("background-color", "white")
-      .style("border", "black")
-      .style("border-radius", "5px")
-      .style("padding", "5px");
+    // const toolTip = d3
+    //   .select(".chart-container")
+    //   .append("div")
+    //   .attr("position", "absolute")
+    //   .style("opacity", 0)
+    //   .style("left", 200)
+    //   .classed("tooltip", true)
+    //   .style("background-color", "white")
+    //   .style("border", "black")
+    //   .style("border-radius", "5px")
+    //   .style("padding", "5px");
 
-    function handleMouseOver(): void {
-      toolTip.style("opacity", 1);
-      d3.select(this)
-        .style("stroke", "#90BE6D")
-        .style("stroke-width", "2")
-        .style("opacity", 1)
-        .style("cursor", "pointer");
-    }
-    function handleMouseMove(d: number): void {
-      toolTip.html(`The value is ${d}`);
-    }
-    function handleMouseLeave(): void {
-      toolTip.style("opacity", 0);
-      d3.select(this).style("stroke", "none");
-    }
+    // function handleMouseOver(): void {
+    //   toolTip.style("opacity", 1);
+    //   d3.select(this)
+    //     .style("stroke", "#90BE6D")
+    //     .style("stroke-width", "2")
+    //     .style("opacity", 1)
+    //     .style("cursor", "pointer");
+    // }
+    // function handleMouseMove(e: Event, d: number): void {
+    //   const [x, y] = d3.pointer(e);
+    //   toolTip.html(`The value is ${d}`).style("left", "100px");
+    // }
+    // function handleMouseLeave(): void {
+    //   toolTip.style("opacity", 0);
+    //   d3.select(this).style("stroke", "none");
+    // }
 
     const bars = d3
       .select(".bars")
       .selectAll("rect")
       .data(myData)
       .join("rect")
-      .attr("width", barWidth - barPadding)
-      .attr("height", function (d: number, i: number): number {
-        return yScale(d);
-      })
       .attr("x", function (d: number, i: number): number {
-        return barWidth * i + yAxisSize + barsPaddingFromYAxis;
+        return barWidth * i + yAxisSize + barPadding;
       })
+      .attr("width", barWidth - barPadding)
+      .attr("height", 0)
+      .attr("y", height - xAxisSize - barPaddingBottom)
+      .transition()
+      .ease(d3.easeCubic)
+      .delay(function (d: number, i: number): number {
+        return i * 100;
+      })
+      .duration(800)
       .attr("y", function (d: number): number {
-        return height - yScale(d) - xAxisSize - barPaddingBottom;
+        return yScale(d) - xAxisSize - barPaddingBottom + xAxisSize * 2;
+      })
+      .attr("height", function (d: number, i: number): number {
+        return height - yScale(d) - xAxisSize * 2;
       })
       .attr("rx", "3")
-      .attr("fill", "#BFE4A3")
-      .filter(() => true)
-      .on("mouseover", handleMouseOver)
-      .on("mousemove", function (e: Event, d: number) {
-        handleMouseMove(d);
-      })
-      .on("mouseleave", handleMouseLeave);
+      .attr("fill", "#BFE4A3");
 
     const yAxis = d3.axisLeft(yScale).ticks(10);
     const xAxis = d3.axisBottom(xScale);
@@ -126,8 +130,9 @@ export default function BarChart() {
       .attr("font-size", "0.5em")
       .attr("font-family", "Verdana")
       .attr("color", "#4D908E")
-      .selectAll(".tick line")
-      .attr("y2", "0"); // shows the ticks of the line
+      .selectAll(".tick text")
+      .attr("transform", "translate(-10, 3)rotate(-45)") // have to take into account the variables for rotation too
+      .style("text-anchor", "end");
   }
 
   useEffect(() => {
