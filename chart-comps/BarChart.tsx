@@ -28,16 +28,13 @@ export default function BarChart() {
     const xAxisSize = 22;
     const width = 800; // width - yAxisSize
     const height = 600;
-    d3.select(".bar-chart").attr("width", width).attr("height", height);
-
-    // need to account for padding and size for x and y axes
-    // this is full width of the chart
-
     const barPadding = 5;
     const barPaddingBottom = 5;
     const chartHeightPadding = 22;
     const chartWidthPadding = 40;
     const barsPaddingFromYAxis = 3;
+
+    d3.select(".bar-chart").attr("width", width).attr("height", height);
 
     // scale function for y axis
 
