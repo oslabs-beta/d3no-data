@@ -3,10 +3,18 @@ import { h, Fragment, useEffect, d3 } from "../mod.ts";
 
 // defining property for user to pass down props
 interface barChartData {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   data: number[];
-  label: string[];
+  labels: string[]; // for y axes
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+  barPadding?: number;
+  color?: string;
+  animation?: boolean;
+  toolTip?: boolean;
+  toolTipText?: string;
+  fontFamily?: string;
 }
 
 // need to move all the variable up here
@@ -16,6 +24,7 @@ export default function BarChart() {
   const label: string[] = [];
   const numData = 12;
 
+  // temp function to update data
   function updateData() {
     for (let i = 0; i < numData; i++) {
       myData.push(Math.floor(Math.random() * 100));
@@ -23,23 +32,83 @@ export default function BarChart() {
     }
   }
 
+  // function to add tooltip
+  function updateInteractivity() {
+    // add a tool tip
+    const toolTip = d3
+      .select("body")
+      .append("div")
+      .style("opacity", 0)
+      .classed("tooltip", true)
+      .style("background-color", "white")
+      .style("position", "absolute")
+      .style("font-family", "Verdana")
+      .style("width", "max-content")
+      .style("border", "1px")
+      .style("border-style", "solid")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
+
+    function handleMouseOver(): void {
+      toolTip.style("opacity", 1);
+      d3.select(this)
+        .style("stroke", "#90BE6D")
+        .style("stroke-width", "2")
+        .style("opacity", 1)
+        .style("cursor", "pointer");
+    }
+
+    function handleMouseMove(e: Event, d: number): void {
+      const [x, y] = d3.pointer(e);
+      toolTip
+        .html(`${d}`)
+        .style("left", `${x + 20}px`)
+        .style("top", `${y - 30}px`);
+    }
+    function handleMouseLeave(): void {
+      toolTip.style("opacity", 0);
+      d3.select(this).style("stroke", "none");
+    }
+
+    d3.select(".bars")
+      .selectAll("rect")
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseleave", handleMouseLeave);
+  }
+
   function updateChart() {
-    const yAxisSize = 22;
-    const xAxisSize = 22;
-    const width = 700; // width - yAxisSize
-    const height = 700;
-    const barPadding = 5; //
-    const barPaddingBottom = 5;
-    const chartHeightPadding = 22;
+    const yAxisSize = 44; // padding of the left and right section between the chart and the svg
+    const xAxisSize = 80; // padding of the top and bottom between the chart and the svg
+    const width = 700; // width of the svg
+    const height = 700; // height of the svg
+    const barPadding = 5; // padding provided between each bar
+    const barPaddingBottom = 5; // padding provided between the chart and the x-axis
+    // need to add coloring
 
     d3.select(".bar-chart").attr("width", width).attr("height", height);
 
-    // scale function for y axis
+    d3.select(".bar-chart")
+      .append("text")
+      .attr("text-anchor", "end")
+      .attr("x", xAxisSize)
+      .attr("y", yAxisSize)
+      .attr("font-family", "Verdana")
+      .text("x label");
 
+    d3.select(".bar-chart")
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("x", width / 2)
+      .attr("y", height - xAxisSize / 2)
+      .attr("font-family", "Verdana")
+      .text("y label");
+
+    // scale function for y axis
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(myData)])
-      .range([height - xAxisSize - chartHeightPadding, 0]);
+      .range([height - xAxisSize * 2, 0]);
 
     // scale function for x axis
     const xScale = d3
@@ -48,36 +117,6 @@ export default function BarChart() {
       .range([0, width - yAxisSize * 2 + barPaddingBottom]);
 
     const barWidth = (width - yAxisSize * 2) / numData;
-
-    // add a tool tip
-    // const toolTip = d3
-    //   .select(".chart-container")
-    //   .append("div")
-    //   .attr("position", "absolute")
-    //   .style("opacity", 0)
-    //   .style("left", 200)
-    //   .classed("tooltip", true)
-    //   .style("background-color", "white")
-    //   .style("border", "black")
-    //   .style("border-radius", "5px")
-    //   .style("padding", "5px");
-
-    // function handleMouseOver(): void {
-    //   toolTip.style("opacity", 1);
-    //   d3.select(this)
-    //     .style("stroke", "#90BE6D")
-    //     .style("stroke-width", "2")
-    //     .style("opacity", 1)
-    //     .style("cursor", "pointer");
-    // }
-    // function handleMouseMove(e: Event, d: number): void {
-    //   const [x, y] = d3.pointer(e);
-    //   toolTip.html(`The value is ${d}`).style("left", "100px");
-    // }
-    // function handleMouseLeave(): void {
-    //   toolTip.style("opacity", 0);
-    //   d3.select(this).style("stroke", "none");
-    // }
 
     const bars = d3
       .select(".bars")
@@ -114,7 +153,7 @@ export default function BarChart() {
       .insert("g", "g")
       .call(yAxis)
       // have to make this data to show for charts dynamic
-      .attr("transform", `translate(${yAxisSize}, ${chartHeightPadding})`)
+      .attr("transform", `translate(${yAxisSize}, ${xAxisSize})`)
       .attr("font-size", "0.5em")
       .attr("font-family", "Verdana")
       .attr("color", "#4D908E")
@@ -138,13 +177,13 @@ export default function BarChart() {
   useEffect(() => {
     updateData();
     updateChart();
+    updateInteractivity();
   }, []);
 
   return (
     <Fragment>
       <div className="chart-container">
         <svg className="bar-chart">
-          {/* grouping for bars and axes */}
           <g>
             <g className="bars"></g>
           </g>
