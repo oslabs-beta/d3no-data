@@ -31,7 +31,6 @@ export default function BarChart() {
     const barPadding = 5;
     const barPaddingBottom = 5;
     const chartHeightPadding = 22;
-    const chartWidthPadding = 40;
     const barsPaddingFromYAxis = 3;
 
     d3.select(".bar-chart").attr("width", width).attr("height", height);
@@ -47,10 +46,11 @@ export default function BarChart() {
     const xScale = d3
       .scaleBand()
       .domain(label)
-      .range([0, width - yAxisSize - chartWidthPadding + barsPaddingFromYAxis]);
+      .range([0, width - yAxisSize * 2 + barsPaddingFromYAxis]);
 
-    const barWidth = (width - yAxisSize - chartWidthPadding) / numData;
+    const barWidth = (width - yAxisSize * 2) / numData;
 
+    // add a tool tip
     const toolTip = d3
       .select(".chart-container")
       .append("div")
@@ -64,7 +64,8 @@ export default function BarChart() {
     function handleMouseOver(): void {
       toolTip.style("opacity", 1);
       d3.select(this)
-        .style("stroke", "black")
+        .style("stroke", "#90BE6D")
+        .style("stroke-width", "2")
         .style("opacity", 1)
         .style("cursor", "pointer");
     }
@@ -73,7 +74,7 @@ export default function BarChart() {
     }
     function handleMouseLeave(): void {
       toolTip.style("opacity", 0);
-      d3.select(this).style("stroke", "none").style("opacity", 0.8);
+      d3.select(this).style("stroke", "none");
     }
 
     const bars = d3
@@ -93,8 +94,6 @@ export default function BarChart() {
       })
       .attr("rx", "3")
       .attr("fill", "#BFE4A3")
-      .attr("stroke", "#90BE6D")
-      .attr("stroke-width", "2")
       .filter(() => true)
       .on("mouseover", handleMouseOver)
       .on("mousemove", function (e: Event, d: number) {
@@ -116,7 +115,7 @@ export default function BarChart() {
       .attr("font-family", "Verdana")
       .attr("color", "#4D908E")
       .selectAll(".tick line")
-      .attr("x2", width - yAxisSize - chartWidthPadding)
+      .attr("x2", width - yAxisSize * 2)
       .attr("opacity", "0.3")
       .attr("stroke-dasharray", "1, 1");
 
