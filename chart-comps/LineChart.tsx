@@ -137,7 +137,7 @@ export default function LineChart() {
 
     function handleMouseMove(e: Event) {
       const [x, y] = d3.pointer(e);
-      const x0 = xScale.invert(x);
+      const x0 = xScale.invert(x - margin.left);
       const i = bisect(data, x0, 1);
       const selectedData = data[i];
       focus
