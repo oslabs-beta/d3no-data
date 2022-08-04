@@ -94,6 +94,7 @@ export default function LineChart() {
           })
       )
       .attr("stroke-width", 3)
+      .filter(() => true)
       .attr("stroke-dasharray", function () {
         return this.getTotalLength();
       })
@@ -101,8 +102,48 @@ export default function LineChart() {
         return this.getTotalLength();
       })
       .transition()
-      .duration(1000)
+      .duration(5000)
       .attr("stroke-dashoffset", 0);
+
+    const focus = d3
+      .select(".line-chart")
+      .append("g")
+      .append("circle")
+      .style("fill", "none")
+      .style("stroke", "black")
+      .style("r", 5)
+      .style("opacity", 0);
+    const focusText = d3
+      .select(".line-chart")
+      .append("g")
+      .append("text")
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+    const bisect = d3.bisector(function (d) {
+      return d.y;
+    }).left;
+
+    function handleMouseOver() {
+      focus.style("opacity", 1);
+      focusText.style("opacity", 1);
+    }
+
+    function handleMouseLeave() {
+      focus.style("opacity", 0);
+      focusText.style("opacity", 0);
+    }
+
+    function handleMouseMove(e: Event) {
+      const [x, y] = d3.pointer(e);
+      const x0 = xScale.invert(x);
+      const i = bisect(data, x0, 1);
+    }
+
+    d3.select(".line-chart")
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseleave", handleMouseLeave);
   }
 
   // add label to the x and y axes
@@ -125,13 +166,52 @@ export default function LineChart() {
   }
 
   function updateInteractivity() {
+    const focus = d3
+      .select(".line-chart")
+      .append("g")
+      .append("circle")
+      .style("fill", "none")
+      .style("stroke", "black")
+      .style("r", 5)
+      .style("opacity", 0);
+    const focusText = d3
+      .select(".line-chart")
+      .append("g")
+      .append("text")
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle");
+
+    const bisect = d3.bisector(function (d) {
+      return d.x;
+    }).left;
+
+    function handleMouseOver() {
+      focus.style("opacity", 1);
+      focusText.style("opacity", 1);
+    }
+
+    function handleMouseLeave() {
+      focus.style("opacity", 0);
+      focusText.style("opacity", 0);
+    }
+
+    function handleMouseMove(e: Event) {
+      const [x, y] = d3.pointer(e);
+      const xScale = d3.scaleTime().domain(
+        d3.extent(data, function (d: { x: Date; y: number }): Date {
+          return d.x;
+        })
+      );
+      const x0 = xScale.invert(y);
+      const i = bisect(data, x0, 1);
+      console.log(i);
+    }
+
     d3.select(".line-chart")
-      .on("mouseover", function () {
-        d3.select(".data-line").style("stroke", "#BFE413");
-      })
-      .on("mouseleave", function () {
-        d3.select(".data-line").style("stroke", "#BFE4A3");
-      });
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseleave", handleMouseLeave);
   }
 
   // create another function to add animation instead of grouping theme into create chart
@@ -140,7 +220,7 @@ export default function LineChart() {
     updateData();
     updateChart();
     updateLabel();
-    updateInteractivity();
+    // updateInteractivity();
   }, []);
 
   return (
