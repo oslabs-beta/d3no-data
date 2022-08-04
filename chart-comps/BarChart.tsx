@@ -22,12 +22,12 @@ interface barChartData {
 export default function BarChart() {
   const myData: number[] = [];
   const label: string[] = [];
-  const numData = 12;
+  const numData = 25;
 
   // temp function to update data
   function updateData() {
     for (let i = 0; i < numData; i++) {
-      myData.push(Math.floor(Math.random() * 100));
+      myData.push(Math.floor(Math.random() * 10000));
       label.push(i + "");
     }
   }
@@ -94,7 +94,7 @@ export default function BarChart() {
       .attr("x", xAxisSize)
       .attr("y", yAxisSize)
       .attr("font-family", "Verdana")
-      .text("x label");
+      .text("y label");
 
     d3.select(".bar-chart")
       .append("text")
@@ -102,7 +102,7 @@ export default function BarChart() {
       .attr("x", width / 2)
       .attr("y", height - xAxisSize / 2)
       .attr("font-family", "Verdana")
-      .text("y label");
+      .text("x label");
 
     // scale function for y axis
     const yScale = d3
