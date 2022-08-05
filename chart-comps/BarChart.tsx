@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { BarChartProps } from "../ChartProps/BarChartProps.ts";
+import { BarChartProps } from "../chart-props/BarChartProps.ts";
 
 // need to work on paddings that dynamically update to avoid overlapping with the graph
 
@@ -29,6 +29,12 @@ export default function BarChart(props: BarChartProps) {
   const barHoverColor = props.barHoverColor || "#90BE6D";
   const fontFamily = props.fontFamily || "Verdana";
   const axesColor = props.axesColor || "#4D908E";
+  const axesLabelColor = props.axesLabelColor || "#277DA1";
+  const addTitle = props.addTitle || false;
+  const setTitle = props.setTitle || "TITLE";
+  const setTitleSize = props.setTitleSize || "1.5em";
+  const setTitleColor = props.setTitleColor || axesLabelColor;
+  const setTitlePadding = props.setTitlePaddingTop || 40;
 
   // function to add tooltip
   function updateInteractivity() {
@@ -160,19 +166,32 @@ export default function BarChart(props: BarChartProps) {
     // add label to the chart
     d3.select(".bar-chart")
       .append("text")
-      .attr("text-anchor", "end")
-      .attr("x", padding.bottom)
-      .attr("y", padding.left)
+      .attr("x", padding.left - padding.left / 2)
+      .attr("y", padding.top - 5)
+      .attr("fill", axesLabelColor)
       .attr("font-family", fontFamily)
-      .text(yAxisLabel);
+      .attr("font-size", "0.8em")
+      .text(`${yAxisLabel}`);
 
     d3.select(".bar-chart")
       .append("text")
-      .attr("text-anchor", "middle")
-      .attr("x", width / 2)
-      .attr("y", height - padding.bottom / 2)
+      .text(`${xAxisLabel}`)
+      .attr("x", (width - padding.left - padding.right) / 2)
+      .attr("y", height - padding.bottom / 3.5)
       .attr("font-family", fontFamily)
-      .text(xAxisLabel);
+      .attr("font-size", "0.8em")
+      .attr("fill", axesLabelColor);
+  }
+
+  function updateTitle() {
+    d3.select(".bar-chart")
+      .append("text")
+      .attr("x", (width - padding.left - padding.right) / 2)
+      .attr("y", setTitlePadding)
+      .attr("font-family", fontFamily)
+      .attr("font-size", setTitleSize)
+      .attr("fill", setTitleColor)
+      .text(setTitle);
   }
 
   useEffect(() => {
@@ -182,6 +201,9 @@ export default function BarChart(props: BarChartProps) {
     }
     if (addLabel) {
       updateLabel();
+    }
+    if (addTitle) {
+      updateTitle();
     }
   }, []);
 

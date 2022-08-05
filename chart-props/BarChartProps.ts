@@ -12,6 +12,7 @@ export interface BarChartProps {
   xAxisLabel?: string;
   yAxisLabel?: string;
   axesColor?: string;
+  axesLabelColor?: string;
   barPadding?: number;
   barColor?: string;
   barHoverColor?: string;
@@ -21,5 +22,9 @@ export interface BarChartProps {
   toolTip?: boolean;
   toolTipText?: string;
   fontFamily?: string;
-  // add label sizing and position
+  addTitle?: boolean;
+  setTitle?: string;
+  setTitleSize?: string;
+  setTitleColor?: string;
+  setTitlePaddingTop?: number;
 }
