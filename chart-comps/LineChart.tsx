@@ -65,7 +65,7 @@ export default function LineChart() {
     svg
       .append("g")
       .call(yAxis)
-      .attr("transform", `translate(${margin.left})`)
+      .attr("transform", `translate(${margin.left}, 0)`)
       .attr("font-size", "0.5em")
       .attr("font-family", "Verdana")
       .attr("color", "#4D908E")
@@ -78,20 +78,20 @@ export default function LineChart() {
       .append("path")
       .classed("data-line", true)
       .data([data])
-      .attr("transform", `translate(${margin.left})`)
+      .attr("transform", `translate(${margin.left}, 0)`)
       .attr("fill", "none")
       .attr("stroke", "#BFE4A3")
       .attr(
         "d",
         d3
           .line()
-          .curve(d3.curveBasis)
           .x(function (d) {
             return xScale(d.x);
           })
           .y(function (d) {
             return yScale(d.y);
           })
+          .curve(d3.curveLinear)
       )
       .attr("stroke-width", 3)
       .filter(() => true)
@@ -109,19 +109,18 @@ export default function LineChart() {
       .select(".line-chart")
       .append("g")
       .append("circle")
-      .style("fill", "none")
-      .style("stroke", "black")
+      .style("fill", "#4D908E")
+      .style("stroke", "#4D908E")
       .style("r", 5)
       .style("opacity", 0);
     const focusText = d3
-      .select(".line-chart")
-      .append("g")
-      .append("text")
+      .select("body")
+      .append("div")
       .style("opacity", 0)
-      .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle");
+      .style("position", "absolute");
+
     const bisect = d3.bisector(function (d) {
-      return d.y;
+      return d.x;
     }).left;
 
     function handleMouseOver() {
@@ -136,8 +135,20 @@ export default function LineChart() {
 
     function handleMouseMove(e: Event) {
       const [x, y] = d3.pointer(e);
-      const x0 = xScale.invert(x);
+      const x0 = xScale.invert(x - margin.left);
       const i = bisect(data, x0, 1);
+      const selectedData = data[i];
+      focus
+        .style("cx", xScale(selectedData.x) + margin.left)
+        .style("cy", yScale(selectedData.y));
+      focusText
+        .html(`${selectedData.y}`)
+        .style("left", `${xScale(selectedData.x) + 50}px`)
+        .style("top", `${yScale(selectedData.y) - 25}px`)
+        .style("font-family", "Verdana")
+        .style("background-color", "white")
+        .style("border-radius", "5px")
+        .style("color", "#4D908E");
     }
 
     d3.select(".line-chart")
@@ -165,62 +176,12 @@ export default function LineChart() {
       .text("x label");
   }
 
-  function updateInteractivity() {
-    const focus = d3
-      .select(".line-chart")
-      .append("g")
-      .append("circle")
-      .style("fill", "none")
-      .style("stroke", "black")
-      .style("r", 5)
-      .style("opacity", 0);
-    const focusText = d3
-      .select(".line-chart")
-      .append("g")
-      .append("text")
-      .style("opacity", 0)
-      .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle");
-
-    const bisect = d3.bisector(function (d) {
-      return d.x;
-    }).left;
-
-    function handleMouseOver() {
-      focus.style("opacity", 1);
-      focusText.style("opacity", 1);
-    }
-
-    function handleMouseLeave() {
-      focus.style("opacity", 0);
-      focusText.style("opacity", 0);
-    }
-
-    function handleMouseMove(e: Event) {
-      const [x, y] = d3.pointer(e);
-      const xScale = d3.scaleTime().domain(
-        d3.extent(data, function (d: { x: Date; y: number }): Date {
-          return d.x;
-        })
-      );
-      const x0 = xScale.invert(y);
-      const i = bisect(data, x0, 1);
-      console.log(i);
-    }
-
-    d3.select(".line-chart")
-      .on("mouseover", handleMouseOver)
-      .on("mousemove", handleMouseMove)
-      .on("mouseleave", handleMouseLeave);
-  }
-
   // create another function to add animation instead of grouping theme into create chart
 
   useEffect(() => {
     updateData();
     updateChart();
     updateLabel();
-    // updateInteractivity();
   }, []);
 
   return (
