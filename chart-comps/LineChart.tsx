@@ -109,17 +109,15 @@ export default function LineChart() {
       .select(".line-chart")
       .append("g")
       .append("circle")
-      .style("fill", "none")
-      .style("stroke", "black")
+      .style("fill", "#4D908E")
+      .style("stroke", "#4D908E")
       .style("r", 5)
       .style("opacity", 0);
     const focusText = d3
-      .select(".line-chart")
-      .append("g")
-      .append("text")
+      .select("body")
+      .append("div")
       .style("opacity", 0)
-      .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle");
+      .style("position", "absolute");
 
     const bisect = d3.bisector(function (d) {
       return d.x;
@@ -143,6 +141,14 @@ export default function LineChart() {
       focus
         .style("cx", xScale(selectedData.x) + margin.left)
         .style("cy", yScale(selectedData.y));
+      focusText
+        .html(`${selectedData.y}`)
+        .style("left", `${xScale(selectedData.x) + 50}px`)
+        .style("top", `${yScale(selectedData.y) - 25}px`)
+        .style("font-family", "Verdana")
+        .style("background-color", "white")
+        .style("border-radius", "5px")
+        .style("color", "#4D908E");
     }
 
     d3.select(".line-chart")
