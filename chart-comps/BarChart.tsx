@@ -2,15 +2,13 @@
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
 import { BarChartProps } from "../chart-props/BarChartProps.ts";
 
-// need to work on paddings that dynamically update to avoid overlapping with the graph
-
 export default function BarChart(props: BarChartProps) {
   // setting up data
   const padding = {
-    top: props.paddingTop || 0,
-    left: props.paddingLeft || 0,
-    right: props.paddingRight || 0,
-    bottom: props.paddingBottom || 0,
+    top: props.paddingTop || 60,
+    left: props.paddingLeft || 60,
+    right: props.paddingRight || 60,
+    bottom: props.paddingBottom || 60,
   };
   const myData: number[] = props.data || [];
   const label: string[] = props.labels || [];
@@ -19,7 +17,7 @@ export default function BarChart(props: BarChartProps) {
   const barPadding = 5; // padding provided between each bar
   const barPaddingBottom = 5; // padding provided between the chart and the x-axis
   const toolTip = props.toolTip == false ? props.toolTip : true;
-  const addLabel = props.addLabel == false ? props.addLabel : true;
+  const addLabel = props.addLabel == false ? props.addLabel : false;
   const animation = props.animation == false ? props.animation : true;
   const animationDuration = props.animationDuration || 800;
   const animationDelay = props.animationDelay || 100;
@@ -40,12 +38,12 @@ export default function BarChart(props: BarChartProps) {
   function updateInteractivity() {
     // add a tool tip
     const toolTip = d3
-      .select("body")
+      .select(".chart-container")
       .append("div")
       .style("opacity", 0)
       .classed("tooltip", true)
       .style("background-color", "white")
-      .style("position", "absolute")
+      .style("position", "relative")
       .style("font-family", fontFamily)
       .style("width", "max-content")
       .style("border", "1px")
@@ -66,8 +64,8 @@ export default function BarChart(props: BarChartProps) {
       const [x, y] = d3.pointer(e);
       toolTip
         .html(`${d}`)
-        .style("left", `${x + 20}px`)
-        .style("top", `${y - 30}px`);
+        .style("left", `${x + 10}px`)
+        .style("top", `${y - height - padding.top}px`);
     }
     function handleMouseLeave(): void {
       toolTip.style("opacity", 0);
