@@ -1,37 +1,43 @@
 // deno-lint-ignore-file
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { LineChartProps } from "../chart-props/LineChartProps.ts";
+import { LineChartProps } from "../ChartProps/LineChartProps.ts";
 
 export default function LineChart(props: LineChartProps) {
   const padding = {
-    top: 70,
-    right: 70,
-    bottom: 70,
-    left: 70,
+    top: props.paddingTop || 70,
+    right: props.paddingRight || 70,
+    bottom: props.paddingBottom || 70,
+    left: props.paddingLeft || 70,
   };
-  const width = 800 - padding.left - padding.right;
-  const height = 600 - padding.bottom - padding.top;
+  const width = (props.width || 800) - padding.left - padding.right;
+  const height = (props.height || 600) - padding.bottom - padding.top;
   const fontFamily = props.fontFamily || "Verdana";
   const xAxisLabel = props.xAxisLabel || "x label";
   const yAxisLabel = props.yAxisLabel || "y label";
   const axesLabelColor = props.axesLabelColor || "#277DA1";
   const axesLabelSize = props.axesLabelSize || "0.8em";
+  const axesColor = props.axesColor || "#4D908E";
+  const axesFontSize = props.axesFontSize || "0.5em";
   const addLabel = props.addLabel || false;
-  const addInteractivity = props.addInteractivity === false ? false : true;
+  const addTooltip = props.addTooltip === false ? false : true;
   const addTitle = props.addTitle || false;
   const setTitle = props.setTitle || "TITLE";
   const setTitleColor = props.setTitleColor || axesLabelColor;
   const lineColor = props.lineColor || "#BFE4A3";
+  const receivedData = props.data;
+  const data: { x: Date; y: number }[] = [];
+  const animation = props.animation || true;
+  const animationDuration = props.animationDuration || 5000;
 
-  let data: { x: Date; y: number }[] = [];
-
-  function updateData() {
-    for (let i = 1900; i <= 2000; i += 1) {
-      data.push({ x: new Date(i, 1, 1), y: Math.floor(Math.random() * 1000) });
+  function cleanData() {
+    for (let d of receivedData) {
+      data.push({
+        x: new Date(d.x),
+        y: d.y,
+      });
     }
   }
-
   function updateChart() {
     const svg = d3
       .select(".line-chart")
@@ -66,9 +72,9 @@ export default function LineChart(props: LineChartProps) {
         "transform",
         `translate(${padding.left}, ${height + padding.bottom})`
       )
-      .attr("font-size", "0.5em")
+      .attr("font-size", axesFontSize)
       .attr("font-family", fontFamily)
-      .attr("color", "#4D908E")
+      .attr("color", axesColor)
       .selectAll(".tick text")
       .attr("transform", "translate(-10, 3)rotate(-45)") // have to take into account the variables for rotation too
       .style("text-anchor", "end");
@@ -76,9 +82,9 @@ export default function LineChart(props: LineChartProps) {
       .append("g")
       .call(yAxis)
       .attr("transform", `translate(${padding.left}, 0)`)
-      .attr("font-size", "0.5em")
       .attr("font-family", fontFamily)
-      .attr("color", "#4D908E")
+      .attr("font-size", axesFontSize)
+      .attr("color", axesColor)
       .selectAll(".tick line")
       .attr("x2", width)
       .attr("opacity", "0.3")
@@ -104,7 +110,7 @@ export default function LineChart(props: LineChartProps) {
           .curve(d3.curveLinear)
       )
       .attr("stroke-width", 3)
-      .filter(() => true)
+      .filter(() => animation)
       .attr("stroke-dasharray", function () {
         return this.getTotalLength();
       })
@@ -112,10 +118,10 @@ export default function LineChart(props: LineChartProps) {
         return this.getTotalLength();
       })
       .transition()
-      .duration(5000)
+      .duration(animationDuration)
       .attr("stroke-dashoffset", 0);
 
-    if (addInteractivity) {
+    if (addTooltip) {
       const focus = d3
         .select(".line-chart")
         .append("g")
@@ -206,9 +212,8 @@ export default function LineChart(props: LineChartProps) {
   // create another function to add animation instead of grouping theme into create chart
 
   useEffect(() => {
-    updateData();
+    cleanData();
     updateChart();
-
     if (addLabel) {
       updateLabel();
     }

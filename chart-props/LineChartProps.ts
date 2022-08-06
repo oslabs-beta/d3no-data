@@ -1,8 +1,8 @@
 export interface LineChartProps {
   data: {
-    x: number;
+    x: Date;
     y: number;
-  };
+  }[];
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;
@@ -12,15 +12,15 @@ export interface LineChartProps {
   lineColor?: string;
   axesColor?: string;
   addLabel?: boolean;
+  axesFontSize?: string;
   xAxisLabel?: string;
   yAxisLabel?: string;
   axesLabelColor?: string;
   axesLabelSize?: string;
   animation?: boolean;
   animationDuration?: number;
-  toolTip?: boolean;
+  addTooltip?: boolean;
   fontFamily?: string;
-  addInteractivity?: boolean;
   addTitle?: boolean;
   setTitle?: string;
   setTitleColor?: string;
