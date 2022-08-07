@@ -14,7 +14,15 @@ export default function DonutChart(props: DonutChartProps) {
 
   const color = d3
     .scaleOrdinal()
-    .range(["green", "purple", "red", "orange", "yellow", "brown", "blue"]);
+    .range([
+      "#CED89E",
+      "#F9F9C5",
+      "#6CC4A1",
+      "#AEDBCE",
+      "#76BA99",
+      "#D9F8C4",
+      "#90C8AC",
+    ]);
 
   const data = [
     { ages: "<18", count: "727432" },
@@ -49,8 +57,10 @@ export default function DonutChart(props: DonutChartProps) {
       .data(pie(data))
       .join("path")
       .attr("d", path)
+      .attr("stroke-width", "1")
+      .attr("stroke", "#277DA1")
       .attr("fill", function (d) {
-        return color(d.value);
+        return color(d.data.ages);
       });
 
     svg
@@ -64,6 +74,7 @@ export default function DonutChart(props: DonutChartProps) {
         return d.data.ages;
       })
       .attr("text-anchor", "middle")
+      .attr("fill", "black")
       .style("font-family", "Verdana")
       .style("font-size", 15);
   }
