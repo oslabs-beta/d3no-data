@@ -23,4 +23,6 @@ export interface ScatterChartProps {
   setTitleColor?: string;
   animation?: boolean;
   animationDuration?: number;
+  dotHoverColor?: string;
+  dotSize?: string;
 }
