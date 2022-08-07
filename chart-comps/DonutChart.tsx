@@ -26,12 +26,12 @@ export default function DonutChart(props: DonutChartProps) {
 
   const data = [
     { ages: "<18", count: "727432" },
+    { ages: "≥65", count: "629032" },
+    { ages: "55-64", count: "515347" },
     { ages: "18-24", count: "341435" },
     { ages: "25-34", count: "444509" },
     { ages: "35-44", count: "426967" },
     { ages: "45-54", count: "480565" },
-    { ages: "55-64", count: "515347" },
-    { ages: "≥65", count: "629032" },
   ];
 
   function updateChart() {
@@ -56,11 +56,23 @@ export default function DonutChart(props: DonutChartProps) {
       .selectAll("path")
       .data(pie(data))
       .join("path")
-      .attr("d", path)
       .attr("stroke-width", "1")
       .attr("stroke", "#277DA1")
       .attr("fill", function (d) {
         return color(d.data.ages);
+      })
+      .transition()
+      .delay(function (d, i: number): number {
+        console.log(d);
+        return (d.value / 1000) * i;
+      })
+      .duration(1000)
+      .attrTween("d", function (d) {
+        const i = d3.interpolate(d.startAngle + 0.1, d.endAngle);
+        return function (t) {
+          d.endAngle = i(t);
+          return path(d);
+        };
       });
 
     svg
