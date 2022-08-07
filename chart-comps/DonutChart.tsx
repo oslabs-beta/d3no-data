@@ -48,9 +48,12 @@ export default function DonutChart(props: DonutChartProps) {
       );
 
     const radius = Math.min(height, width) / 2;
-    const pie = d3.pie().value((d: { ages: string; count: string }): number => {
-      return Number(d.count);
-    });
+    const pie = d3
+      .pie()
+      .value((d: { ages: string; count: string }): number => {
+        return Number(d.count);
+      })
+      .sort(null);
     const path = d3.arc().outerRadius(radius).innerRadius(100);
     svg
       .selectAll("path")
@@ -63,12 +66,11 @@ export default function DonutChart(props: DonutChartProps) {
       })
       .transition()
       .delay(function (d, i: number): number {
-        console.log(d);
-        return (d.value / 1000) * i;
+        return i * 120;
       })
-      .duration(1000)
+      .duration(240)
       .attrTween("d", function (d) {
-        const i = d3.interpolate(d.startAngle + 0.1, d.endAngle);
+        const i = d3.interpolate(d.startAngle + 0, d.endAngle);
         return function (t) {
           d.endAngle = i(t);
           return path(d);
