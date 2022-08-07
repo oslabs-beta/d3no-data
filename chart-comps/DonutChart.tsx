@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h, useEffect, Fragment, d3 } from "../mod.ts";
-import { DonutChartProps } from "../ChartProps/DonutChartProps.ts";
+import { DonutChartProps } from "../chart-props/DonutChartProps.ts";
 
 export default function DonutChart(props: DonutChartProps) {
   const padding = {
@@ -50,9 +50,22 @@ export default function DonutChart(props: DonutChartProps) {
       .join("path")
       .attr("d", path)
       .attr("fill", function (d) {
-        console.log(d);
         return color(d.value);
       });
+
+    svg
+      .selectAll("text")
+      .data(pie(data))
+      .join("text")
+      .attr("transform", function (d) {
+        return `translate(${path.centroid(d)})`;
+      })
+      .text(function (d) {
+        return d.data.ages;
+      })
+      .attr("text-anchor", "middle")
+      .style("font-family", "Verdana")
+      .style("font-size", 15);
   }
 
   useEffect(() => {
