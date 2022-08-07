@@ -12,4 +12,15 @@ export interface ScatterChartProps {
   dotColor?: string;
   axesColor?: string;
   fontFamily?: string;
+  addLabel?: boolean;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+  axesFontSize?: string;
+  axesLabelColor?: string;
+  addTitle?: boolean;
+  setTitle?: string;
+  setTitleSize?: string;
+  setTitleColor?: string;
+  animation?: boolean;
+  animationDuration?: number;
 }
