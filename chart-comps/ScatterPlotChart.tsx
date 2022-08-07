@@ -14,6 +14,17 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
   const dotColor = props.dotColor || "#BFE4A3";
   const axesColor = props.axesColor || "#4D908E";
   const fontFamily = props.fontFamily || "Verdana";
+  const addLabel = props.addLabel || true;
+  const xAxisLabel = props.xAxisLabel || "x label";
+  const yAxisLabel = props.yAxisLabel || "y label";
+  const axesFontSize = props.axesFontSize || "0.8em";
+  const axesLabelColor = props.axesLabelColor || "#277DA1";
+  const addTitle = props.addTitle || true;
+  const setTitle = props.setTitle || "TITLE";
+  const setTitleSize = props.setTitleSize || "1.5em";
+  const setTitleColor = props.setTitleColor || axesLabelColor;
+  const animation = props.animation == false ? false : true;
+  const animationDuration = props.animationDuration || 1200;
   const data: { x: number; y: number }[] = [
     {
       x: 35,
@@ -257,6 +268,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
       .call(yAxis)
       .attr("transform", `translate(${padding.left}, ${padding.top})`)
       .attr("color", axesColor)
+      .attr("font-family", fontFamily)
       .selectAll(".tick line")
       .attr("x2", width)
       .attr("stroke-width", "0.5")
@@ -270,6 +282,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
         `translate(${padding.left}, ${height + padding.bottom})`
       )
       .attr("color", axesColor)
+      .attr("font-family", fontFamily)
       .selectAll(".tick line")
       .attr("y2", -height)
       .attr("stroke-width", "0.5")
@@ -285,7 +298,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
       .attr("cy", Math.random() * height + padding.top)
       .attr("fill", dotColor)
       .transition()
-      .duration(1200)
+      .duration(animationDuration * (animation ? 1 : 0))
       .attr("cx", function (d: { x: number; y: number }) {
         return xScale(d.x) + padding.left;
       })
@@ -296,8 +309,51 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
 
   function updateInteractivity() {}
 
+  function updateLabel() {
+    // add x axis label
+    d3.select(".scatter-chart")
+      .append("text")
+      .attr("x", padding.left / 2)
+      .attr("y", padding.top - 5)
+      .attr("font-family", fontFamily)
+      .attr("font-size", axesFontSize)
+      .attr("text-anchor", "start")
+      .attr("fill", axesLabelColor)
+      .text(xAxisLabel);
+
+    // add y axis label
+    d3.select(".scatter-chart")
+      .append("text")
+      .attr("x", (width + padding.left + padding.right) / 2)
+      .attr("y", height + padding.bottom + padding.top - 5)
+      .attr("font-family", fontFamily)
+      .attr("font-size", axesFontSize)
+      .attr("text-anchor", "middle")
+      .attr("fill", axesLabelColor)
+      .text(yAxisLabel);
+  }
+
+  // to add title
+  function updateTitle() {
+    d3.select(".scatter-chart")
+      .append("text")
+      .attr("x", (width + padding.left + padding.right) / 2)
+      .attr("y", padding.top / 2)
+      .attr("font-family", fontFamily)
+      .attr("font-size", setTitleSize)
+      .attr("text-anchor", "middle")
+      .attr("fill", setTitleColor)
+      .text(setTitle);
+  }
+
   useEffect(() => {
     updateChart();
+    if (addLabel) {
+      updateLabel();
+    }
+    if (addTitle) {
+      updateTitle();
+    }
   }, []);
 
   return (
