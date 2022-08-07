@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h, Fragment, d3, useEffect } from "../mod.ts";
-import { ScatterChartProps } from "../chart-props/ScatterChartProps.ts";
+import { ScatterChartProps } from "../ChartProps/ScatterChartProps.ts";
 
 export default function ScatterPlotChart(props: ScatterChartProps) {
   const padding = {
@@ -12,6 +12,8 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
   const width = (props.width || 600) - padding.left - padding.right;
   const height = (props.height || 600) - padding.top - padding.bottom;
   const dotColor = props.dotColor || "#BFE4A3";
+  const dotHoverColor = props.dotHoverColor || "#90BE6D";
+  const dotSize = props.dotSize || "5";
   const axesColor = props.axesColor || "#4D908E";
   const fontFamily = props.fontFamily || "Verdana";
   const addLabel = props.addLabel || true;
@@ -19,214 +21,12 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
   const yAxisLabel = props.yAxisLabel || "y label";
   const axesFontSize = props.axesFontSize || "0.8em";
   const axesLabelColor = props.axesLabelColor || "#277DA1";
-  const addTitle = props.addTitle || true;
+  const addTitle = props.addTitle || false;
   const setTitle = props.setTitle || "TITLE";
   const setTitleSize = props.setTitleSize || "1.5em";
   const setTitleColor = props.setTitleColor || axesLabelColor;
   const animation = props.animation == false ? false : true;
   const animationDuration = props.animationDuration || 1200;
-  const data: { x: number; y: number }[] = [
-    {
-      x: 35,
-      y: 92,
-    },
-    {
-      x: 73,
-      y: 74,
-    },
-    {
-      x: 5,
-      y: 107,
-    },
-    {
-      x: 84,
-      y: 36,
-    },
-    {
-      x: 28,
-      y: 99,
-    },
-    {
-      x: 80,
-      y: 8,
-    },
-    {
-      x: 47,
-      y: 2,
-    },
-    {
-      x: 91,
-      y: 104,
-    },
-    {
-      x: 24,
-      y: 15,
-    },
-    {
-      x: 36,
-      y: 1,
-    },
-    {
-      x: 12,
-      y: 46,
-    },
-    {
-      x: 78,
-      y: 77,
-    },
-    {
-      x: 59,
-      y: 103,
-    },
-    {
-      x: 39,
-      y: 71,
-    },
-    {
-      x: 61,
-      y: 6,
-    },
-    {
-      x: 35,
-      y: 112,
-    },
-    {
-      x: 89,
-      y: 40,
-    },
-    {
-      x: 68,
-      y: 104,
-    },
-    {
-      x: 37,
-      y: 3,
-    },
-    {
-      x: 13,
-      y: 83,
-    },
-    {
-      x: 39,
-      y: 94,
-    },
-    {
-      x: 35,
-      y: 47,
-    },
-    {
-      x: 65,
-      y: 62,
-    },
-    {
-      x: 52,
-      y: 77,
-    },
-    {
-      x: 68,
-      y: 50,
-    },
-    {
-      x: 99,
-      y: 7,
-    },
-    {
-      x: 46,
-      y: 98,
-    },
-    {
-      x: 88,
-      y: 1,
-    },
-    {
-      x: 59,
-      y: 90,
-    },
-    {
-      x: 19,
-      y: 40,
-    },
-    {
-      x: 33,
-      y: 42,
-    },
-    {
-      x: 61,
-      y: 26,
-    },
-    {
-      x: 74,
-      y: 31,
-    },
-    {
-      x: 56,
-      y: 95,
-    },
-    {
-      x: 45,
-      y: 58,
-    },
-    {
-      x: 20,
-      y: 57,
-    },
-    {
-      x: 41,
-      y: 49,
-    },
-    {
-      x: 57,
-      y: 17,
-    },
-    {
-      x: 12,
-      y: 13,
-    },
-    {
-      x: 90,
-      y: 87,
-    },
-    {
-      x: 64,
-      y: 21,
-    },
-    {
-      x: 31,
-      y: 45,
-    },
-    {
-      x: 4,
-      y: 113,
-    },
-    {
-      x: 2,
-      y: 48,
-    },
-    {
-      x: 39,
-      y: 63,
-    },
-    {
-      x: 73,
-      y: 55,
-    },
-    {
-      x: 68,
-      y: 118,
-    },
-    {
-      x: 68,
-      y: 41,
-    },
-    {
-      x: 94,
-      y: 24,
-    },
-    {
-      x: 62,
-      y: 21,
-    },
-  ];
 
   function updateChart() {
     // set up dimension for the chart
@@ -290,10 +90,11 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
 
     svg
       .append("g")
+      .classed("dots", true)
       .selectAll("circle")
       .data([...data])
       .join("circle")
-      .attr("r", "3")
+      .attr("r", dotSize)
       .attr("cx", Math.random() * width + padding.left)
       .attr("cy", Math.random() * height + padding.top)
       .attr("fill", dotColor)
@@ -307,7 +108,48 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
       });
   }
 
-  function updateInteractivity() {}
+  // upon hover
+  function updateInteractivity() {
+    const toolTip = d3
+      .select(".chart-container")
+      .append("div")
+      .style("opacity", 0)
+      .classed("toolTip", true)
+      .style("background-color", "white")
+      .style("position", "relative")
+      .style("font-family", fontFamily)
+      .style("width", "max-content")
+      .style("border", "1px")
+      .style("border-style", "solid")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
+
+    function handleMouseOver(e: Event, d: { x: number; y: number }): void {
+      const [x, y] = d3.pointer(e);
+      toolTip
+        .style("opacity", 1)
+        .style("position", "relative")
+        .html(`x: ${d.x}, y: ${d.y}`)
+        .style("left", `${x + 5}px`)
+        .style("top", `${y - height - padding.top - padding.bottom - 40}px`);
+
+      d3.select(this)
+        .style("stroke", dotHoverColor)
+        .style("stroke-width", 1)
+        .style("cursor", "pointer");
+    }
+
+    function handleMouseLeave(): void {
+      toolTip.style("opacity", 0).style("position", "absolute");
+      d3.select(this).style("stroke-width", 0);
+    }
+
+    const svg = d3
+      .select(".dots")
+      .selectAll("circle")
+      .on("mouseover", handleMouseOver)
+      .on("mouseleave", handleMouseLeave);
+  }
 
   function updateLabel() {
     // add x axis label
@@ -354,6 +196,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
     if (addTitle) {
       updateTitle();
     }
+    updateInteractivity();
   }, []);
 
   return (
