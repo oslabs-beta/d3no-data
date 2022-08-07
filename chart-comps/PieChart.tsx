@@ -1,18 +1,16 @@
 /** @jsx h */
-import { h, Fragment, d3, useEffect } from "../mod.ts";
-import { PieChartProps } from "../chart-props/PieChartProps.ts";
+import { h } from "../mod.ts";
+import { Fragment } from "../mod.ts";
+import { useEffect } from "../mod.ts";
+import { d3 } from "../mod.ts";
+import { PieChartProps } from "../ChartProps/PieChartProps.ts";
 
 export default function PieChart(props: PieChartProps) {
   function makePiechart(props: PieChartProps) {
-    // const  Data  = props.data || dummydata; <- TODO: load in dummy data from local file
-
-    //TODO: Remove rng data from file
     const dataset: number[] = [];
     for (let i = 0; i < 5; i++) {
       dataset.push(Math.floor(Math.random() * 100));
     }
-
-    //example letters, change to change text TODO: Remove
     const letterset = ["a", "b", "c", "d", "e"];
 
     //VARIABLES
