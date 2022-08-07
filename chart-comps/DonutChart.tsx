@@ -93,6 +93,8 @@ export default function DonutChart(props: DonutChartProps) {
       .style("font-size", 15);
   }
 
+  function updateInteractivity() {}
+
   useEffect(() => {
     updateChart();
   }, []);
