@@ -11,6 +11,11 @@ export default function DonutChart(props: DonutChartProps) {
   };
   const width = 500 - padding.left - padding.right;
   const height = 500 - padding.top - padding.bottom;
+  const radius = Math.min(height, width) / 2;
+  const fontFamily = props.fontFamily || "Verdana";
+  const setTitle = props.setTitle || "TITLE";
+  const setTitleColor = props.setTitleColor || "#277DA1";
+  const setTitleSize = props.setTitleSize || "1em";
 
   const color = d3
     .scaleOrdinal()
@@ -36,7 +41,7 @@ export default function DonutChart(props: DonutChartProps) {
 
   function updateChart() {
     const svg = d3
-      .select(".doughnut-chart")
+      .select(".donut-chart")
       .attr("width", width + padding.left + padding.right)
       .attr("height", height + padding.bottom + padding.top)
       .append("g")
@@ -47,7 +52,6 @@ export default function DonutChart(props: DonutChartProps) {
         })`
       );
 
-    const radius = Math.min(height, width) / 2;
     const pie = d3
       .pie()
       .value((d: { ages: string; count: string }): number => {
@@ -93,16 +97,64 @@ export default function DonutChart(props: DonutChartProps) {
       .style("font-size", 15);
   }
 
-  function updateInteractivity() {}
+  function updateInteractivity() {
+    const toolTip = d3.select(".donut-chart").append("text").attr("opacity", 0);
+
+    function handleMouseOver() {
+      toolTip.attr("opacity", "1");
+      d3.select(this)
+        .transition()
+        .duration(500)
+        .attr("opacity", "0.6")
+        .style("cursor", "pointer");
+    }
+
+    function handleMouseMove(e: Event, d) {
+      const [x, y] = d3.pointer(e);
+      toolTip
+        .attr("x", x + 10 + (width + padding.left + padding.right) / 2)
+        .attr("y", y + (height + padding.top + padding.bottom) / 2)
+        .attr("opacity", "1")
+        .attr("font-family", fontFamily)
+        .attr("font-size", "0.8em")
+        .attr("fill", "black")
+        .text(`${d.data.count}`);
+    }
+
+    function handleMouseLeave() {
+      toolTip.attr("opacity", 0);
+      d3.select(this).transition().duration(500).attr("opacity", "1");
+    }
+
+    d3.select(".donut-chart")
+      .selectAll("path")
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseleave", handleMouseLeave);
+  }
+
+  function updateTitle() {
+    d3.select(".donut-chart")
+      .append("text")
+      .attr("x", (width + padding.left + padding.right) / 2)
+      .attr("y", padding.top / 2)
+      .attr("font-family", fontFamily)
+      .attr("text-anchor", "middle")
+      .attr("fill", setTitleColor)
+      .attr("font-size", setTitleSize)
+      .text(setTitle);
+  }
 
   useEffect(() => {
     updateChart();
+    updateInteractivity();
+    updateTitle();
   }, []);
 
   return (
     <Fragment>
       <div className="chart-container">
-        <svg className="doughnut-chart"></svg>
+        <svg className="donut-chart"></svg>
       </div>
     </Fragment>
   );
