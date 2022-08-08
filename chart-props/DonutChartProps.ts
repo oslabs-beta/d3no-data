@@ -1,4 +1,4 @@
-export interface ScatterChartProps {
+export interface DonutChartProps {
   data: {
     x: number;
     y: number;
@@ -9,20 +9,14 @@ export interface ScatterChartProps {
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
-  dotColor?: string;
-  axesColor?: string;
+  colorRange?: string[];
   fontFamily?: string;
-  addLabel?: boolean;
-  xAxisLabel?: string;
-  yAxisLabel?: string;
-  axesFontSize?: string;
-  axesLabelColor?: string;
   addTitle?: boolean;
   setTitle?: string;
   setTitleSize?: string;
   setTitleColor?: string;
   animation?: boolean;
   animationDuration?: number;
-  dotHoverColor?: string;
-  dotSize?: string;
+  toolTip?: boolean;
+  toolTipContent?: string;
 }
