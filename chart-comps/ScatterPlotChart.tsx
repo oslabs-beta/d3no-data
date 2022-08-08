@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h, Fragment, d3, useEffect } from "../mod.ts";
-import { ScatterChartProps } from "../ChartProps/ScatterChartProps.ts";
+import { ScatterChartProps } from "../chart-props/ScatterChartProps.ts";
 
 export default function ScatterPlotChart(props: ScatterChartProps) {
   const padding = {
