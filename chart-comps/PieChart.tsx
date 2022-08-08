@@ -1,9 +1,6 @@
 /** @jsx h */
-import { h } from "../mod.ts";
-import { Fragment } from "../mod.ts";
-import { useEffect } from "../mod.ts";
-import { d3 } from "../mod.ts";
-import { PieChartProps } from "../ChartProps/PieChartProps.ts";
+import { h, Fragment, useEffect, d3 } from "../mod.ts";
+import { PieChartProps } from "../chart-props/PieChartProps.ts";
 
 export default function PieChart(props: PieChartProps) {
   function makePiechart(props: PieChartProps) {
