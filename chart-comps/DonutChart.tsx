@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h, useEffect, Fragment, d3 } from "../mod.ts";
-import { DonutChartProps } from "../chart-props/DonutChartProps.ts";
+import { DonutChartProps } from "../ChartProps/DonutChartProps.ts";
 
 export default function DonutChart(props: DonutChartProps) {
   const padding = {
@@ -104,8 +104,9 @@ export default function DonutChart(props: DonutChartProps) {
       toolTip.attr("opacity", "1");
       d3.select(this)
         .transition()
-        .duration(500)
+        .duration(300)
         .attr("opacity", "0.6")
+        .attr("stroke-width", "4")
         .style("cursor", "pointer");
     }
 
@@ -123,7 +124,11 @@ export default function DonutChart(props: DonutChartProps) {
 
     function handleMouseLeave() {
       toolTip.attr("opacity", 0);
-      d3.select(this).transition().duration(500).attr("opacity", "1");
+      d3.select(this)
+        .transition()
+        .duration(300)
+        .attr("opacity", "1")
+        .attr("stroke-width", "1");
     }
 
     d3.select(".donut-chart")
