@@ -27,6 +27,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
   const setTitleColor = props.setTitleColor || axesLabelColor;
   const animation = props.animation == false ? false : true;
   const animationDuration = props.animationDuration || 1200;
+  const data: { x: number; y: number }[] = props.data || [];
 
   function updateChart() {
     // set up dimension for the chart
