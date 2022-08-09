@@ -28,7 +28,7 @@ export default function DonutChart(props: DonutChartProps) {
     "#90C8AC",
   ];
   const color = d3.scaleOrdinal().range(colorRange);
-  const data = donutData;
+  const data = props.data || [];
   const toolTip = props.toolTip || true;
 
   function updateChart() {
