@@ -16,7 +16,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
   const dotSize = props.dotSize || "5";
   const axesColor = props.axesColor || "#4D908E";
   const fontFamily = props.fontFamily || "Verdana";
-  const addLabel = props.addLabel || true;
+  const addAxesLabel = props.addAxesLabel || true;
   const xAxisLabel = props.xAxisLabel || "x label";
   const yAxisLabel = props.yAxisLabel || "y label";
   const axesFontSize = props.axesFontSize || "0.8em";
@@ -191,7 +191,7 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
 
   useEffect(() => {
     updateChart();
-    if (addLabel) {
+    if (addAxesLabel) {
       updateLabel();
     }
     if (addTitle) {

@@ -19,7 +19,7 @@ export default function LineChart(props: LineChartProps) {
   const axesLabelSize = props.axesLabelSize || "0.8em";
   const axesColor = props.axesColor || "#4D908E";
   const axesFontSize = props.axesFontSize || "0.5em";
-  const addLabel = props.addLabel || false;
+  const addAxesLabel = props.addAxesLabel == false ? props.addAxesLabel : false;
   const addTooltip = props.addTooltip === false ? false : true;
   const addTitle = props.addTitle || false;
   const setTitle = props.setTitle || "TITLE";
@@ -214,7 +214,7 @@ export default function LineChart(props: LineChartProps) {
   useEffect(() => {
     cleanData();
     updateChart();
-    if (addLabel) {
+    if (addAxesLabel) {
       updateLabel();
     }
     if (addTitle) {

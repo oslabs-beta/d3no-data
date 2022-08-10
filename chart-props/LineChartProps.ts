@@ -11,7 +11,7 @@ export interface LineChartProps {
   height?: number;
   lineColor?: string;
   axesColor?: string;
-  addLabel?: boolean;
+  addAxesLabel?: boolean;
   axesFontSize?: string;
   xAxisLabel?: string;
   yAxisLabel?: string;
@@ -23,5 +23,6 @@ export interface LineChartProps {
   fontFamily?: string;
   addTitle?: boolean;
   setTitle?: string;
+  setTitleSize?: string;
   setTitleColor?: string;
 }
