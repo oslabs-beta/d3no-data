@@ -1,6 +1,8 @@
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { BarChartProps } from "../chart-props/BarChartProps.ts";
+import { BarChartProps } from "../ChartProps/BarChartProps.ts";
+
+// need to work on paddings that dynamically update to avoid overlapping with the graph
 
 export default function BarChart(props: BarChartProps) {
   // setting up data
@@ -10,14 +12,15 @@ export default function BarChart(props: BarChartProps) {
     right: props.paddingRight || 60,
     bottom: props.paddingBottom || 60,
   };
-  const myData: number[] = props.data || [];
-  const label: string[] = props.labels || [];
+
+  const data: { x: string; y: number }[] = props.data || [];
+  const label: string[] = [];
   const width = props.width || 700; // width of the svg
   const height = props.height || 700; // height of the svg
   const barPadding = 5; // padding provided between each bar
   const barPaddingBottom = 5; // padding provided between the chart and the x-axis
   const toolTip = props.toolTip == false ? props.toolTip : true;
-  const addLabel = props.addLabel == false ? props.addLabel : false;
+  const addAxesLabel = props.addAxesLabel == false ? props.addAxesLabel : false;
   const animation = props.animation == false ? props.animation : true;
   const animationDuration = props.animationDuration || 800;
   const animationDelay = props.animationDelay || 100;
@@ -80,27 +83,36 @@ export default function BarChart(props: BarChartProps) {
   }
 
   function updateChart() {
+    console.log("updating chart");
     d3.select(".bar-chart").attr("width", width).attr("height", height);
 
     // scale function for y axis
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(myData)])
+      .domain([
+        0,
+        data.reduce((obj1, obj2) => {
+          return obj1.y > obj2.y ? obj1 : obj2;
+        }).y,
+      ])
       .range([height - padding.top - padding.bottom, 0]);
 
+    for (let obj of data) {
+      label.push(obj.x);
+    }
     // scale function for x axis
     const xScale = d3
       .scaleBand()
       .domain(label)
       .range([0, width - padding.left - padding.right + barPaddingBottom]);
 
-    const barWidth = (width - padding.left - padding.right) / myData.length;
+    const barWidth = (width - padding.left - padding.right) / data.length;
 
     d3.select(".bars")
       .selectAll("rect")
-      .data(myData)
+      .data(data)
       .join("rect")
-      .attr("x", function (d: number, i: number): number {
+      .attr("x", function (d: { x: string; y: number }, i: number): number {
         return barWidth * i + padding.left + barPadding;
       })
       .attr("width", barWidth - barPadding)
@@ -108,22 +120,25 @@ export default function BarChart(props: BarChartProps) {
       .attr("y", height - padding.bottom - barPaddingBottom)
       .transition()
       .ease(d3.easeCubic)
-      .delay(function (d: number, i: number): number {
+      .delay(function (d: { x: string; y: number }, i: number): number {
         return i * animationDelay * (animation ? 1 : 0);
       })
       .duration(animationDuration * (animation ? 1 : 0))
-      .attr("y", function (d: number): number {
+      .attr("y", function (d: { x: string; y: number }): number {
         return (
-          yScale(d) -
+          yScale(d.y) -
           padding.bottom -
           barPaddingBottom +
           padding.bottom +
           padding.top
         );
       })
-      .attr("height", function (d: number, i: number): number {
-        return height - yScale(d) - padding.bottom - padding.top;
-      })
+      .attr(
+        "height",
+        function (d: { x: string; y: number }, i: number): number {
+          return height - yScale(d.y) - padding.bottom - padding.top;
+        }
+      )
       .attr("rx", "3")
       .attr("fill", barColor);
 
@@ -197,7 +212,7 @@ export default function BarChart(props: BarChartProps) {
     if (toolTip) {
       updateInteractivity();
     }
-    if (addLabel) {
+    if (addAxesLabel) {
       updateLabel();
     }
     if (addTitle) {
