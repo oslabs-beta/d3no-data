@@ -45,13 +45,6 @@ export default function BarChart(props: BarChartProps) {
       .append("text")
       .attr("opacity", 0)
       .attr("font-family", fontFamily);
-    // .style("background-color", "white")
-    // .style("position", "relative")
-    // .style("width", "max-content")
-    // .style("border", "1px")
-    // .style("border-style", "solid")
-    // .style("border-radius", "5px")
-    // .style("padding", "5px");
 
     function handleMouseOver(): void {
       toolTip.attr("opacity", 1);
