@@ -41,21 +41,20 @@ export default function BarChart(props: BarChartProps) {
   function updateInteractivity() {
     // add a tool tip
     const toolTip = d3
-      .select(".chart-container")
-      .append("div")
-      .style("opacity", 0)
-      .classed("tooltip", true)
-      .style("background-color", "white")
-      .style("position", "relative")
-      .style("font-family", fontFamily)
-      .style("width", "max-content")
-      .style("border", "1px")
-      .style("border-style", "solid")
-      .style("border-radius", "5px")
-      .style("padding", "5px");
+      .select(".bar-chart")
+      .append("text")
+      .attr("opacity", 0)
+      .attr("font-family", fontFamily);
+    // .style("background-color", "white")
+    // .style("position", "relative")
+    // .style("width", "max-content")
+    // .style("border", "1px")
+    // .style("border-style", "solid")
+    // .style("border-radius", "5px")
+    // .style("padding", "5px");
 
     function handleMouseOver(): void {
-      toolTip.style("opacity", 1);
+      toolTip.attr("opacity", 1);
       d3.select(this)
         .style("stroke", barHoverColor)
         .style("stroke-width", "2")
@@ -63,15 +62,15 @@ export default function BarChart(props: BarChartProps) {
         .style("cursor", "pointer");
     }
 
-    function handleMouseMove(e: Event, d: number): void {
+    function handleMouseMove(e: Event, d: { x: string; y: number }): void {
       const [x, y] = d3.pointer(e);
       toolTip
-        .html(`${d}`)
-        .style("left", `${x + 10}px`)
-        .style("top", `${y - height - padding.top}px`);
+        .text(`${d.y}`)
+        .attr("x", x + 10)
+        .attr("y", y - 5);
     }
     function handleMouseLeave(): void {
-      toolTip.style("opacity", 0);
+      toolTip.attr("opacity", 0);
       d3.select(this).style("stroke", "none");
     }
 
