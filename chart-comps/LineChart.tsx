@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { LineChartProps } from "../ChartProps/LineChartProps.ts";
+import { LineChartProps } from "../chart-props/LineChartProps.ts";
 
 export default function LineChart(props: LineChartProps) {
   const padding = {
