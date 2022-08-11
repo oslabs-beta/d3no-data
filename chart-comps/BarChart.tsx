@@ -20,7 +20,7 @@ export default function BarChart(props: BarChartProps) {
   const barPadding = 5; // padding provided between each bar
   const barPaddingBottom = 5; // padding provided between the chart and the x-axis
   const toolTip = props.toolTip == false ? props.toolTip : true;
-  const addAxesLabel = props.addAxesLabel == false ? props.addAxesLabel : false;
+  const addAxesLabel = props.addAxesLabel == true ? props.addAxesLabel : false;
   const animation = props.animation == false ? props.animation : true;
   const animationDuration = props.animationDuration || 800;
   const animationDelay = props.animationDelay || 100;
