@@ -4,14 +4,18 @@ import { h, Fragment, useEffect, d3 } from "../mod.ts";
 import { LineChartProps } from "../chart-props/LineChartProps.ts";
 
 export default function LineChart(props: LineChartProps) {
+  const yLabelPadding = 20;
+  const xLabelPadding = 20;
   const padding = {
-    top: props.paddingTop || 70,
-    right: props.paddingRight || 70,
-    bottom: props.paddingBottom || 70,
-    left: props.paddingLeft || 70,
+    top: (props.paddingTop || 50) + yLabelPadding,
+    right: (props.paddingRight || 50) + xLabelPadding,
+    bottom: (props.paddingBottom || 50) + yLabelPadding,
+    left: (props.paddingLeft || 50) + xLabelPadding,
   };
-  const width = (props.width || 800) - padding.left - padding.right;
-  const height = (props.height || 600) - padding.bottom - padding.top;
+  const width =
+    (props.width || 800) - padding.left - padding.right - xLabelPadding * 2;
+  const height =
+    (props.height || 600) - padding.bottom - padding.top - yLabelPadding * 2;
   const fontFamily = props.fontFamily || "Verdana";
   const xAxisLabel = props.xAxisLabel || "x label";
   const yAxisLabel = props.yAxisLabel || "y label";
@@ -30,6 +34,8 @@ export default function LineChart(props: LineChartProps) {
   const animation = props.animation || true;
   const animationDuration = props.animationDuration || 5000;
 
+  // create datasets variable in order to incorporate more lines in the chart
+
   function cleanData() {
     for (let d of receivedData) {
       data.push({
@@ -41,8 +47,11 @@ export default function LineChart(props: LineChartProps) {
   function updateChart() {
     const svg = d3
       .select(".line-chart")
-      .attr("width", width + padding.left + padding.right)
-      .attr("height", height + padding.top + padding.bottom);
+      .attr("width", width + padding.left + padding.right + xLabelPadding * 2)
+      .attr(
+        "height",
+        height + padding.top + padding.bottom + yLabelPadding * 2
+      );
 
     // configure scale
     const xScale = d3
@@ -65,12 +74,15 @@ export default function LineChart(props: LineChartProps) {
     const yAxis = d3.axisLeft(yScale);
     const xAxis = d3.axisBottom(xScale);
 
+    // customizing x axis
     svg
       .append("g")
       .call(xAxis)
       .attr(
         "transform",
-        `translate(${padding.left}, ${height + padding.bottom})`
+        `translate(${padding.left + xLabelPadding}, ${
+          height + padding.bottom + yLabelPadding
+        })`
       )
       .attr("font-size", axesFontSize)
       .attr("font-family", fontFamily)
@@ -78,23 +90,36 @@ export default function LineChart(props: LineChartProps) {
       .selectAll(".tick text")
       .attr("transform", "translate(-10, 3)rotate(-45)") // have to take into account the variables for rotation too
       .style("text-anchor", "end");
+
+    // select the first g component which is the y axis in the graph
+    d3.select("g")
+      .selectAll(".tick line")
+      .attr("y2", -height)
+      .attr("opacity", "0.3");
+
+    // customizing y axis
     svg
       .append("g")
       .call(yAxis)
-      .attr("transform", `translate(${padding.left}, 0)`)
+      .attr(
+        "transform",
+        `translate(${padding.left + xLabelPadding}, ${yLabelPadding})`
+      )
       .attr("font-family", fontFamily)
       .attr("font-size", axesFontSize)
       .attr("color", axesColor)
       .selectAll(".tick line")
       .attr("x2", width)
-      .attr("opacity", "0.3")
-      .attr("stroke-dasharray", "1, 1");
+      .attr("opacity", "0.3");
 
     svg
       .append("path")
       .classed("data-line", true)
       .data([data])
-      .attr("transform", `translate(${padding.left}, 0)`)
+      .attr(
+        "transform",
+        `translate(${padding.left + xLabelPadding}, ${yLabelPadding})`
+      )
       .attr("fill", "none")
       .attr("stroke", lineColor)
       .attr(
@@ -130,6 +155,7 @@ export default function LineChart(props: LineChartProps) {
         .style("stroke", "#4D908E")
         .style("r", 5)
         .style("opacity", 0);
+
       const focusText = d3
         .select("body")
         .append("div")
@@ -154,10 +180,12 @@ export default function LineChart(props: LineChartProps) {
         const [x, y] = d3.pointer(e);
         const x0 = xScale.invert(x - padding.left);
         const i = bisect(data, x0, 1);
-        const selectedData = data[i];
+        const selectedData = data[i - 1];
+
         focus
-          .style("cx", xScale(selectedData.x) + padding.left)
-          .style("cy", yScale(selectedData.y));
+          .style("cx", xScale(selectedData.x) + padding.left + xLabelPadding)
+          .style("cy", yScale(selectedData.y) + yLabelPadding);
+
         focusText
           .html(`${selectedData.y}`)
           .style("left", `${xScale(selectedData.x) + 50}px`)
@@ -190,19 +218,23 @@ export default function LineChart(props: LineChartProps) {
   function updateLabel() {
     d3.select(".line-chart")
       .append("text")
-      .attr("text-anchor", "start")
-      .attr("x", padding.left / 2)
-      .attr("y", padding.top - 10) // between the y label and the axes
+      .attr("text-anchor", "middle")
       .attr("font-family", fontFamily)
       .attr("fill", axesLabelColor)
       .attr("font-size", axesLabelSize)
+      .attr(
+        "transform",
+        `translate(${padding.left / 2}, ${
+          (height + padding.bottom + padding.top) / 2
+        }) rotate(-90)`
+      )
       .text(yAxisLabel);
 
     d3.select(".line-chart")
       .append("text")
       .attr("text-anchor", "middle")
       .attr("x", (width + padding.left + padding.right) / 2)
-      .attr("y", height + padding.bottom + padding.top)
+      .attr("y", height + padding.bottom + padding.top + yLabelPadding)
       .attr("font-family", fontFamily)
       .attr("fill", axesLabelColor)
       .attr("font-size", axesLabelSize)
@@ -225,9 +257,7 @@ export default function LineChart(props: LineChartProps) {
   return (
     <Fragment>
       <div className="chart-container">
-        <svg className="line-chart">
-          <g></g>
-        </svg>
+        <svg className="line-chart"></svg>
       </div>
     </Fragment>
   );

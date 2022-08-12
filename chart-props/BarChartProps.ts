@@ -8,8 +8,8 @@ export interface BarChartProps {
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
-  width?: number | string;
-  height?: number | string;
+  width?: number;
+  height?: number;
   addAxesLabel?: boolean;
   xAxisLabel?: string;
   yAxisLabel?: string;

@@ -7,10 +7,11 @@ import { BarChartProps } from "../chart-props/BarChartProps.ts";
 export default function BarChart(props: BarChartProps) {
   // setting up data
   const padding = {
-    top: props.paddingTop || 60,
-    left: props.paddingLeft || 60,
-    right: props.paddingRight || 60,
-    bottom: props.paddingBottom || 60,
+    // to avoid label to go out of svg
+    top: (props.paddingTop || 40) + 20,
+    left: (props.paddingLeft || 40) + 20,
+    right: (props.paddingRight || 40) + 20,
+    bottom: (props.paddingBottom || 40) + 20,
   };
 
   const data: { x: string; y: number }[] = props.data || [];
@@ -39,6 +40,12 @@ export default function BarChart(props: BarChartProps) {
 
   // function to add tooltip
   function updateInteractivity() {
+    const toolTipBackground = d3
+      .select(".bar-chart")
+      .append("rect")
+      .attr("fill", "white")
+      .attr("rx", 5)
+      .attr("opacity", 0);
     const toolTip = d3
       .select(".bar-chart")
       .append("text")
@@ -47,23 +54,37 @@ export default function BarChart(props: BarChartProps) {
 
     function handleMouseOver(): void {
       toolTip.attr("opacity", 1);
+      toolTipBackground.attr("opacity", 1);
       d3.select(this)
-        .style("stroke", barHoverColor)
-        .style("stroke-width", "2")
-        .style("opacity", 1)
+        .transition()
+        .duration(200)
+        .style("opacity", 0.8)
         .style("cursor", "pointer");
     }
 
     function handleMouseMove(e: Event, d: { x: string; y: number }): void {
+      const toolTipPaddingLeft = 15;
+      const toolTipPaddingTop = 10;
       const [x, y] = d3.pointer(e);
       toolTip
         .text(`${d.y}`)
-        .attr("x", x + 10)
-        .attr("y", y - 5);
+        .attr("x", x + toolTipPaddingLeft)
+        .attr("y", y - toolTipPaddingTop);
+
+      const { width, height } = toolTip.node()?.getBBox();
+
+      const padding = 10;
+
+      toolTipBackground
+        .attr("x", x + toolTipPaddingLeft - padding / 2)
+        .attr("y", y - height - (padding + toolTipPaddingTop) / 2)
+        .attr("width", width + padding)
+        .attr("height", height + padding);
     }
     function handleMouseLeave(): void {
-      toolTip.attr("opacity", 0);
-      d3.select(this).style("stroke", "none");
+      toolTip.attr("opacity", 0).text("");
+      toolTipBackground.attr("opacity", 0).attr("width", 0).attr("height", 0);
+      d3.select(this).transition().duration(100).style("opacity", 1);
     }
 
     d3.select(".bars")
@@ -128,10 +149,12 @@ export default function BarChart(props: BarChartProps) {
           return height - yScale(d.y) - padding.bottom - padding.top;
         }
       )
+      .attr("stroke-width", 2)
+      .attr("stroke", barHoverColor)
       .attr("rx", "3")
       .attr("fill", barColor);
 
-    const yAxis = d3.axisLeft(yScale).ticks(3);
+    const yAxis = d3.axisLeft(yScale).ticks(8);
     const xAxis = d3.axisBottom(xScale);
 
     const barChart = d3.select(".bar-chart");
@@ -184,6 +207,7 @@ export default function BarChart(props: BarChartProps) {
       .attr("fill", axesLabelColor)
       .attr("font-family", fontFamily)
       .attr("font-size", "0.8em")
+      .attr("text-anchor", "middle")
       .text(`${yAxisLabel}`);
 
     d3.select(".bar-chart")
@@ -193,6 +217,7 @@ export default function BarChart(props: BarChartProps) {
       .attr("y", height + padding.bottom)
       .attr("font-family", fontFamily)
       .attr("font-size", "0.8em")
+      .attr("text-anchor", "middle")
       .attr("fill", axesLabelColor);
   }
 
