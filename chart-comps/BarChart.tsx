@@ -15,8 +15,8 @@ export default function BarChart(props: BarChartProps) {
 
   const data: { x: string; y: number }[] = props.data || [];
   const label: string[] = [];
-  const width = props.width || 700; // width of the svg
-  const height = props.height || 700; // height of the svg
+  const width = (props.width || 700) - padding.left - padding.right; // width of the svg
+  const height = (props.height || 700) - padding.top - padding.bottom; // height of the svg
   const barPadding = 5; // padding provided between each bar
   const barPaddingBottom = 5; // padding provided between the chart and the x-axis
   const toolTip = props.toolTip == false ? props.toolTip : true;
@@ -39,7 +39,6 @@ export default function BarChart(props: BarChartProps) {
 
   // function to add tooltip
   function updateInteractivity() {
-    // add a tool tip
     const toolTip = d3
       .select(".bar-chart")
       .append("text")
@@ -76,7 +75,9 @@ export default function BarChart(props: BarChartProps) {
 
   function updateChart() {
     console.log("updating chart");
-    d3.select(".bar-chart").attr("width", width).attr("height", height);
+    d3.select(".bar-chart")
+      .attr("width", width + padding.left + padding.right)
+      .attr("height", height + padding.top + padding.bottom);
 
     // scale function for y axis
     const yScale = d3
@@ -92,6 +93,7 @@ export default function BarChart(props: BarChartProps) {
     for (let obj of data) {
       label.push(obj.x);
     }
+
     // scale function for x axis
     const xScale = d3
       .scaleBand()
@@ -100,16 +102,17 @@ export default function BarChart(props: BarChartProps) {
 
     const barWidth = (width - padding.left - padding.right) / data.length;
 
+    // rendering bar charts
     d3.select(".bars")
       .selectAll("rect")
       .data(data)
       .join("rect")
       .attr("x", function (d: { x: string; y: number }, i: number): number {
-        return barWidth * i + padding.left + barPadding;
+        return barWidth * i + padding.left + barPadding + padding.left;
       })
       .attr("width", barWidth - barPadding)
       .attr("height", 0)
-      .attr("y", height - padding.bottom - barPaddingBottom)
+      .attr("y", height - barPaddingBottom)
       .transition()
       .ease(d3.easeCubic)
       .delay(function (d: { x: string; y: number }, i: number): number {
@@ -117,13 +120,7 @@ export default function BarChart(props: BarChartProps) {
       })
       .duration(animationDuration * (animation ? 1 : 0))
       .attr("y", function (d: { x: string; y: number }): number {
-        return (
-          yScale(d.y) -
-          padding.bottom -
-          barPaddingBottom +
-          padding.bottom +
-          padding.top
-        );
+        return yScale(d.y) - barPaddingBottom + padding.bottom + padding.top;
       })
       .attr(
         "height",
@@ -134,45 +131,56 @@ export default function BarChart(props: BarChartProps) {
       .attr("rx", "3")
       .attr("fill", barColor);
 
-    const yAxis = d3.axisLeft(yScale).ticks(10);
+    const yAxis = d3.axisLeft(yScale).ticks(3);
     const xAxis = d3.axisBottom(xScale);
 
     const barChart = d3.select(".bar-chart");
 
+    // render y Axis
     barChart
       .insert("g", "g")
       .call(yAxis)
       // have to make this data to show for charts dynamic
-      .attr("transform", `translate(${padding.left}, ${padding.top})`)
+      .attr(
+        "transform",
+        `translate(${padding.left + padding.right}, ${
+          padding.top + padding.bottom
+        })`
+      )
       .attr("font-size", "0.5em")
       .attr("font-family", fontFamily)
       .attr("color", axesColor)
       .selectAll(".tick line")
       .attr("x2", width - padding.left - padding.right)
-      .attr("opacity", "0.3")
-      .attr("stroke-dasharray", "1, 1");
+      .attr("opacity", "0.5");
 
+    // render x Axis
     barChart
       .append("g")
       .call(xAxis)
       .attr(
         "transform",
-        `translate(${padding.left}, ${height - padding.bottom})`
+        `translate(${padding.left + padding.right}, ${height})`
       )
       .attr("font-size", "0.5em")
       .attr("font-family", fontFamily)
       .attr("color", axesColor)
       .selectAll(".tick text")
-      .attr("transform", "translate(-10, 3)rotate(-45)") // have to take into account the variables for rotation too
-      .style("text-anchor", "end");
+      .attr("transform", "translate(-10, 3) rotate(-30)"); // have to take into account the variables for rotation too
+
+    d3.select(".bar-chart").selectAll(".tick line").attr("y2", 0);
   }
 
   function updateLabel() {
     // add label to the chart
     d3.select(".bar-chart")
       .append("text")
-      .attr("x", padding.left - padding.left / 2)
-      .attr("y", padding.top - 5)
+      .attr(
+        "transform",
+        `translate(${padding.left}, ${
+          (height + padding.top + padding.bottom) / 2
+        }) rotate(-90)`
+      )
       .attr("fill", axesLabelColor)
       .attr("font-family", fontFamily)
       .attr("font-size", "0.8em")
@@ -181,8 +189,8 @@ export default function BarChart(props: BarChartProps) {
     d3.select(".bar-chart")
       .append("text")
       .text(`${xAxisLabel}`)
-      .attr("x", (width - padding.left - padding.right) / 2)
-      .attr("y", height - padding.bottom / 3.5)
+      .attr("x", (width + padding.left) / 2)
+      .attr("y", height + padding.bottom)
       .attr("font-family", fontFamily)
       .attr("font-size", "0.8em")
       .attr("fill", axesLabelColor);
@@ -191,7 +199,7 @@ export default function BarChart(props: BarChartProps) {
   function updateTitle() {
     d3.select(".bar-chart")
       .append("text")
-      .attr("x", (width - padding.left - padding.right) / 2)
+      .attr("x", (width + padding.left) / 2)
       .attr("y", setTitlePadding)
       .attr("font-family", fontFamily)
       .attr("font-size", setTitleSize)
