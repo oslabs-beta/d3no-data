@@ -156,44 +156,72 @@ export default function LineChart(props: LineChartProps) {
         .style("r", 5)
         .style("opacity", 0);
 
+      const focusSquare = d3
+        .select(".line-chart")
+        .attr("fill", "white")
+        .attr("rx", 5)
+        .append("rect")
+        .attr("opacity", 0);
+
       const focusText = d3
-        .select("body")
-        .append("div")
-        .style("opacity", 0)
-        .style("position", "absolute");
+        .select(".line-chart")
+        .append("text")
+        .attr("opacity", 0)
+        .attr("text-anchor", "start");
 
       const bisect = d3.bisector(function (d) {
         return d.x;
       }).left;
 
       function handleMouseOver() {
-        focus.style("opacity", 1);
+        focus.transition().duration(1000).style("opacity", 1);
         focusText.style("opacity", 1);
+        focusSquare.style("opacity", 1);
       }
 
       function handleMouseLeave() {
         focus.style("opacity", 0);
         focusText.style("opacity", 0);
+        focusSquare.style("opacity", 0);
       }
 
       function handleMouseMove(e: Event) {
+        const toolTipPaddingLeft = 15;
+        const toolTipPaddingTop = 10;
         const [x, y] = d3.pointer(e);
         const x0 = xScale.invert(x - padding.left);
         const i = bisect(data, x0, 1);
         const selectedData = data[i - 1];
 
+        const { width, height } = focusText.node()?.getBBox();
+
         focus
           .style("cx", xScale(selectedData.x) + padding.left + xLabelPadding)
           .style("cy", yScale(selectedData.y) + yLabelPadding);
 
+        focusSquare
+          .attr("x", `${xScale(selectedData.x) + xLabelPadding + padding.left}`)
+          .attr("y", `${yScale(selectedData.y) - height}`)
+          .attr("width", width + toolTipPaddingLeft)
+          .attr("height", height + toolTipPaddingTop)
+          .attr("stroke", "black")
+          .attr("stroke-opacity", "0.5")
+          .attr("rx", 8);
+
         focusText
           .html(`${selectedData.y}`)
-          .style("left", `${xScale(selectedData.x) + 50}px`)
-          .style("top", `${yScale(selectedData.y) - 25}px`)
-          .style("font-family", fontFamily)
-          .style("background-color", "white")
-          .style("border-radius", "5px")
-          .style("color", "#4D908E");
+          .attr(
+            "x",
+            `${
+              xScale(selectedData.x) +
+              xLabelPadding +
+              padding.left +
+              toolTipPaddingLeft / 2
+            }`
+          )
+          .attr("y", `${yScale(selectedData.y)}`)
+          .attr("font-family", fontFamily)
+          .attr("fill", "black");
       }
 
       d3.select(".line-chart")
