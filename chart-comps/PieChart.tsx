@@ -2,6 +2,7 @@
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
 import { PieChartProps } from "../chart-props/PieChartProps.ts";
 
+// exporting PieChart
 export default function PieChart(props: PieChartProps) {
   function makePiechart(props: PieChartProps) {
     const dataset: number[] = [];

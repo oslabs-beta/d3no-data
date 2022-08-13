@@ -1,6 +1,8 @@
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { BarChartProps } from "../chart-props/BarChartProps.ts";
+import { BarChartProps } from "../ChartProps/BarChartProps.ts";
+
+// need to work on paddings that dynamically update to avoid overlapping with the graph
 
 // need to work on paddings that dynamically update to avoid overlapping with the graph
 
@@ -55,6 +57,16 @@ export default function BarChart(props: BarChartProps) {
     function handleMouseOver(): void {
       toolTip.attr("opacity", 1);
       toolTipBackground.attr("opacity", 1);
+    // .style("background-color", "white")
+    // .style("position", "relative")
+    // .style("width", "max-content")
+    // .style("border", "1px")
+    // .style("border-style", "solid")
+    // .style("border-radius", "5px")
+    // .style("padding", "5px");
+
+    function handleMouseOver(): void {
+      toolTip.attr("opacity", 1);
       d3.select(this)
         .transition()
         .duration(200)
@@ -85,6 +97,15 @@ export default function BarChart(props: BarChartProps) {
       toolTip.attr("opacity", 0).text("");
       toolTipBackground.attr("opacity", 0).attr("width", 0).attr("height", 0);
       d3.select(this).transition().duration(100).style("opacity", 1);
+      const [x, y] = d3.pointer(e);
+      toolTip
+        .text(`${d.y}`)
+        .attr("x", x + 10)
+        .attr("y", y - 5);
+    }
+    function handleMouseLeave(): void {
+      toolTip.attr("opacity", 0);
+      d3.select(this).style("stroke", "none");
     }
 
     d3.select(".bars")
@@ -95,10 +116,7 @@ export default function BarChart(props: BarChartProps) {
   }
 
   function updateChart() {
-    console.log("updating chart");
-    d3.select(".bar-chart")
-      .attr("width", width + padding.left + padding.right)
-      .attr("height", height + padding.top + padding.bottom);
+    d3.select(".bar-chart").attr("width", width).attr("height", height);
 
     // scale function for y axis
     const yScale = d3
@@ -129,7 +147,7 @@ export default function BarChart(props: BarChartProps) {
       .data(data)
       .join("rect")
       .attr("x", function (d: { x: string; y: number }, i: number): number {
-        return barWidth * i + padding.left + barPadding + padding.left;
+        return barWidth * i + padding.left + barPadding;
       })
       .attr("width", barWidth - barPadding)
       .attr("height", 0)
@@ -141,7 +159,13 @@ export default function BarChart(props: BarChartProps) {
       })
       .duration(animationDuration * (animation ? 1 : 0))
       .attr("y", function (d: { x: string; y: number }): number {
-        return yScale(d.y) - barPaddingBottom + padding.bottom + padding.top;
+        return (
+          yScale(d.y) -
+          padding.bottom -
+          barPaddingBottom +
+          padding.bottom +
+          padding.top
+        );
       })
       .attr(
         "height",
@@ -149,8 +173,6 @@ export default function BarChart(props: BarChartProps) {
           return height - yScale(d.y) - padding.bottom - padding.top;
         }
       )
-      .attr("stroke-width", 2)
-      .attr("stroke", barHoverColor)
       .attr("rx", "3")
       .attr("fill", barColor);
 
