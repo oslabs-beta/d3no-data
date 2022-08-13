@@ -1,17 +1,21 @@
 // deno-lint-ignore-file
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { LineChartProps } from "../chart-props/LineChartProps.ts";
+import { LineChartProps } from "../ChartProps/LineChartProps.ts";
 
 export default function LineChart(props: LineChartProps) {
+  const yLabelPadding = 20;
+  const xLabelPadding = 20;
   const padding = {
-    top: props.paddingTop || 70,
-    right: props.paddingRight || 70,
-    bottom: props.paddingBottom || 70,
-    left: props.paddingLeft || 70,
+    top: (props.paddingTop || 50) + yLabelPadding,
+    right: (props.paddingRight || 50) + xLabelPadding,
+    bottom: (props.paddingBottom || 50) + yLabelPadding,
+    left: (props.paddingLeft || 50) + xLabelPadding,
   };
-  const width = (props.width || 800) - padding.left - padding.right;
-  const height = (props.height || 600) - padding.bottom - padding.top;
+  const width =
+    (props.width || 800) - padding.left - padding.right - xLabelPadding * 2;
+  const height =
+    (props.height || 600) - padding.bottom - padding.top - yLabelPadding * 2;
   const fontFamily = props.fontFamily || "Verdana";
   const xAxisLabel = props.xAxisLabel || "x label";
   const yAxisLabel = props.yAxisLabel || "y label";
@@ -19,58 +23,84 @@ export default function LineChart(props: LineChartProps) {
   const axesLabelSize = props.axesLabelSize || "0.8em";
   const axesColor = props.axesColor || "#4D908E";
   const axesFontSize = props.axesFontSize || "0.5em";
-  const addLabel = props.addLabel || false;
+  const addAxesLabel = props.addAxesLabel == false ? props.addAxesLabel : false;
   const addTooltip = props.addTooltip === false ? false : true;
   const addTitle = props.addTitle || false;
   const setTitle = props.setTitle || "TITLE";
   const setTitleColor = props.setTitleColor || axesLabelColor;
-  const lineColor = props.lineColor || "#BFE4A3";
-  const receivedData = props.data;
-  const data: { x: Date; y: number }[] = [];
+  const receivedDatasets = props.datasets;
   const animation = props.animation || true;
   const animationDuration = props.animationDuration || 5000;
+  const addLegend = props.addLegend === false ? props.addLegend : true;
+  // create datasets variable in order to incorporate more lines in the chart
+  const datasets = [];
 
-  function cleanData() {
-    for (let d of receivedData) {
-      data.push({
-        x: new Date(d.x),
-        y: d.y,
+  // configure scale
+  let drawPoints = [];
+  function cleanDatasets() {
+    for (let ds of receivedDatasets) {
+      const tempData = [];
+      for (let obj of ds.data) {
+        tempData.push({
+          x: new Date(obj.x),
+          y: obj.y,
+        });
+      }
+      datasets.push({
+        label: ds.label,
+        color: ds.color,
+        data: tempData,
       });
+
+      drawPoints = [...drawPoints, ...tempData];
     }
   }
-  function updateChart() {
-    const svg = d3
-      .select(".line-chart")
-      .attr("width", width + padding.left + padding.right)
-      .attr("height", height + padding.top + padding.bottom);
 
-    // configure scale
-    const xScale = d3
+  let xScale = null;
+  let yScale = null;
+
+  function configureScale() {
+    xScale = d3
       .scaleTime()
       .domain(
-        d3.extent(data, function (d: { x: Date; y: number }): Date {
+        d3.extent(drawPoints, function (d: { x: Date; y: number }): number {
           return d.x;
         })
       )
       .range([0, width]);
-    const yScale = d3
+    yScale = d3
       .scaleLinear()
       .domain(
-        d3.extent(data, function (d: { x: Date; y: number }): number {
+        d3.extent(drawPoints, function (d: { x: Date; y: number }): number {
           return d.y;
         })
       )
       .range([height + padding.bottom, padding.top]);
+  }
+
+  function updateChart() {
+    const svg = d3
+      .select(".line-chart")
+      .attr("width", width + padding.left + padding.right + xLabelPadding * 2)
+      .attr(
+        "height",
+        height + padding.top + padding.bottom + yLabelPadding * 2
+      );
 
     const yAxis = d3.axisLeft(yScale);
     const xAxis = d3.axisBottom(xScale);
+    yAxis.tickSizeOuter(0);
+    xAxis.tickSizeOuter(0);
 
+    // customizing x axis
     svg
       .append("g")
       .call(xAxis)
       .attr(
         "transform",
-        `translate(${padding.left}, ${height + padding.bottom})`
+        `translate(${padding.left + xLabelPadding}, ${
+          height + padding.bottom + yLabelPadding
+        })`
       )
       .attr("font-size", axesFontSize)
       .attr("font-family", fontFamily)
@@ -78,107 +108,173 @@ export default function LineChart(props: LineChartProps) {
       .selectAll(".tick text")
       .attr("transform", "translate(-10, 3)rotate(-45)") // have to take into account the variables for rotation too
       .style("text-anchor", "end");
+
+    // select the first g component which is the y axis in the graph
+    d3.select("g")
+      .selectAll(".tick line")
+      .attr("y2", -height)
+      .attr("opacity", "0.3");
+
+    // customizing y axis
     svg
       .append("g")
       .call(yAxis)
-      .attr("transform", `translate(${padding.left}, 0)`)
+      .attr(
+        "transform",
+        `translate(${padding.left + xLabelPadding}, ${yLabelPadding})`
+      )
       .attr("font-family", fontFamily)
       .attr("font-size", axesFontSize)
       .attr("color", axesColor)
       .selectAll(".tick line")
       .attr("x2", width)
-      .attr("opacity", "0.3")
-      .attr("stroke-dasharray", "1, 1");
+      .attr("opacity", "0.3");
 
-    svg
-      .append("path")
-      .classed("data-line", true)
-      .data([data])
-      .attr("transform", `translate(${padding.left}, 0)`)
-      .attr("fill", "none")
-      .attr("stroke", lineColor)
-      .attr(
-        "d",
-        d3
-          .line()
-          .x(function (d) {
-            return xScale(d.x);
+    // loop through the datasets to create lines
+    for (let line of datasets) {
+      svg
+        .append("path")
+        .classed("data-line", true)
+        .data([line])
+        .attr("stroke", function (d) {
+          return d.color;
+        })
+        .data([line.data])
+        .attr(
+          "transform",
+          `translate(${padding.left + xLabelPadding}, ${yLabelPadding})`
+        )
+        .attr("fill", "none")
+        .attr(
+          "d",
+          d3
+            .line()
+            .x(function (d) {
+              // console.log(d);
+              return xScale(d.x);
+            })
+            .y(function (d) {
+              return yScale(d.y);
+            })
+            .curve(d3.curveLinear)
+        )
+        .attr("stroke-width", 2)
+        .filter(() => animation)
+        .attr("stroke-dasharray", function () {
+          return this.getTotalLength();
+        })
+        .attr("stroke-dashoffset", function () {
+          return this.getTotalLength();
+        })
+        .transition()
+        .duration(animationDuration)
+        .attr("stroke-dashoffset", 0);
+    }
+  }
+
+  function updateTooltip() {
+    // need to work on tool tip
+    const toolTip = d3.select(".line-chart");
+
+    function handleMouseOver() {
+      const { x, y } = d3
+        .select(this)
+        .attr("cursor", "pointer")
+        .node()
+        .getBBox();
+
+      toolTip.select(".tool-tip text").text(`${y}`);
+
+      toolTip
+        .select(".tool-tip")
+        .transition()
+        .duration(200)
+        .attr("opacity", 1)
+        .attr("transform", `translate(${x + 15}, ${y - 15})`);
+    }
+
+    function handleMouseLeave() {
+      toolTip.select(".tool-tip").transition().duration(200).attr("opacity", 0);
+    }
+
+    for (let i = 0; i < datasets.length; i++) {
+      for (let data of datasets[i].data) {
+        const focus = d3
+          .select(".line-chart")
+          .append("g")
+          .data([data])
+          .append("circle")
+          .style("fill", datasets[i].color)
+          .style("stroke", datasets[i].color)
+          .attr("cx", function (d) {
+            return xScale(data.x) + padding.left + xLabelPadding;
           })
-          .y(function (d) {
-            return yScale(d.y);
+          .attr("cy", function (d) {
+            return yScale(data.y) + yLabelPadding;
           })
-          .curve(d3.curveLinear)
-      )
-      .attr("stroke-width", 3)
-      .filter(() => animation)
-      .attr("stroke-dasharray", function () {
-        return this.getTotalLength();
-      })
-      .attr("stroke-dashoffset", function () {
-        return this.getTotalLength();
-      })
-      .transition()
-      .duration(animationDuration)
-      .attr("stroke-dashoffset", 0);
-
-    if (addTooltip) {
-      const focus = d3
-        .select(".line-chart")
-        .append("g")
-        .append("circle")
-        .style("fill", "#4D908E")
-        .style("stroke", "#4D908E")
-        .style("r", 5)
-        .style("opacity", 0);
-      const focusText = d3
-        .select("body")
-        .append("div")
-        .style("opacity", 0)
-        .style("position", "absolute");
-
-      const bisect = d3.bisector(function (d) {
-        return d.x;
-      }).left;
-
-      function handleMouseOver() {
-        focus.style("opacity", 1);
-        focusText.style("opacity", 1);
+          .attr("r", 3)
+          .style("opacity", 1)
+          .on("mouseover", handleMouseOver)
+          .on("mouseleave", handleMouseLeave);
       }
+    }
 
-      function handleMouseLeave() {
-        focus.style("opacity", 0);
-        focusText.style("opacity", 0);
+    toolTip.append("g").classed("tool-tip", true).attr("opacity", 0);
+    toolTip
+      .select(".tool-tip")
+      .append("rect")
+      .attr("fill", "green")
+      .attr("width", 50)
+      .attr("height", 20);
+    toolTip.select(".tool-tip").append("text").text("test");
+  }
+
+  function updateLegend() {
+    if (addLegend) {
+      // need to take into account the size of the square
+      const squareSize = 20;
+
+      for (let i = 0; i < datasets.length; i++) {
+        const legendTitle = d3
+          .select(".line-chart")
+          .data([datasets[i]])
+          .append("text")
+          .text(datasets[i].label)
+          .attr(
+            "x",
+            (padding.left + padding.right + width) / 2 + i * 20 + squareSize * i
+          )
+          .attr("y", padding.top)
+          .attr("font-family", "Verdana")
+          .attr("text-anchor", "right")
+          .style("alignment-baseline", "middle");
+
+        const legendCat = d3
+          .select(".line-chart")
+          .data([datasets[i]])
+          .append("rect")
+          .attr("x", function (d) {
+            return (
+              (padding.left + padding.right + width) / 2 +
+              i * 20 -
+              20 +
+              squareSize * i
+            );
+          })
+          .attr("y", padding.top - 10)
+          .attr("width", squareSize)
+          .attr("height", squareSize)
+          .attr("fill", function (d) {
+            return datasets[i].color;
+          });
       }
-
-      function handleMouseMove(e: Event) {
-        const [x, y] = d3.pointer(e);
-        const x0 = xScale.invert(x - padding.left);
-        const i = bisect(data, x0, 1);
-        const selectedData = data[i];
-        focus
-          .style("cx", xScale(selectedData.x) + padding.left)
-          .style("cy", yScale(selectedData.y));
-        focusText
-          .html(`${selectedData.y}`)
-          .style("left", `${xScale(selectedData.x) + 50}px`)
-          .style("top", `${yScale(selectedData.y) - 25}px`)
-          .style("font-family", fontFamily)
-          .style("background-color", "white")
-          .style("border-radius", "5px")
-          .style("color", "#4D908E");
-      }
-
-      d3.select(".line-chart")
-        .on("mouseover", handleMouseOver)
-        .on("mousemove", handleMouseMove)
-        .on("mouseleave", handleMouseLeave);
     }
   }
 
   function updateTitle() {
     d3.select(".line-chart")
       .append("text")
-      .attr("text-anchor", "middle")
+      .attr("text-anchor", "left")
       .attr("x", (width + padding.left + padding.right) / 2)
       .attr("y", padding.top / 2)
       .attr("font-family", fontFamily)
@@ -190,44 +286,49 @@ export default function LineChart(props: LineChartProps) {
   function updateLabel() {
     d3.select(".line-chart")
       .append("text")
-      .attr("text-anchor", "start")
-      .attr("x", padding.left / 2)
-      .attr("y", padding.top - 10) // between the y label and the axes
+      .attr("text-anchor", "middle")
       .attr("font-family", fontFamily)
       .attr("fill", axesLabelColor)
       .attr("font-size", axesLabelSize)
+      .attr(
+        "transform",
+        `translate(${padding.left / 2}, ${
+          (height + padding.bottom + padding.top) / 2
+        }) rotate(-90)`
+      )
       .text(yAxisLabel);
 
     d3.select(".line-chart")
       .append("text")
       .attr("text-anchor", "middle")
       .attr("x", (width + padding.left + padding.right) / 2)
-      .attr("y", height + padding.bottom + padding.top)
+      .attr("y", height + padding.bottom + padding.top + yLabelPadding)
       .attr("font-family", fontFamily)
       .attr("fill", axesLabelColor)
       .attr("font-size", axesLabelSize)
       .text(xAxisLabel);
   }
 
-  // create another function to add animation instead of grouping theme into create chart
-
   useEffect(() => {
-    cleanData();
+    cleanDatasets();
+    configureScale();
     updateChart();
-    if (addLabel) {
+    if (addAxesLabel) {
       updateLabel();
+    }
+    if (updateTooltip) {
+      updateTooltip();
     }
     if (addTitle) {
       updateTitle();
     }
+    updateLegend();
   }, []);
 
   return (
     <Fragment>
       <div className="chart-container">
-        <svg className="line-chart">
-          <g></g>
-        </svg>
+        <svg className="line-chart"></svg>
       </div>
     </Fragment>
   );
