@@ -1,22 +1,26 @@
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { BarChartProps } from "../chart-props/BarChartProps.ts";
+import { BarChartProps } from "../ChartProps/BarChartProps.ts";
+
+// need to work on paddings that dynamically update to avoid overlapping with the graph
 
 // need to work on paddings that dynamically update to avoid overlapping with the graph
 
 export default function BarChart(props: BarChartProps) {
   // setting up data
   const padding = {
-    top: props.paddingTop || 60,
-    left: props.paddingLeft || 60,
-    right: props.paddingRight || 60,
-    bottom: props.paddingBottom || 60,
+    // to avoid label to go out of svg
+    top: (props.paddingTop || 40) + 20,
+    left: (props.paddingLeft || 40) + 20,
+    right: (props.paddingRight || 40) + 20,
+    bottom: (props.paddingBottom || 40) + 20,
   };
 
   const data: { x: string; y: number }[] = props.data || [];
   const label: string[] = [];
-  const width = props.width as number || 700; // width of the svg
-  const height = props.height as number || 700; // height of the svg
+  const width = (props.width || 700) - padding.left - padding.right; // width of the svg
+  const height = (props.height || 700) - padding.top - padding.bottom; // height of the svg
+
   const barPadding = 5; // padding provided between each bar
   const barPaddingBottom = 5; // padding provided between the chart and the x-axis
   const toolTip = props.toolTip == false ? props.toolTip : true;
@@ -39,7 +43,12 @@ export default function BarChart(props: BarChartProps) {
 
   // function to add tooltip
   function updateInteractivity() {
-    // add a tool tip
+    const toolTipBackground = d3
+      .select(".bar-chart")
+      .append("rect")
+      .attr("fill", "white")
+      .attr("rx", 5)
+      .attr("opacity", 0);
     const toolTip = d3
       .select(".bar-chart")
       .append("text")
@@ -48,14 +57,47 @@ export default function BarChart(props: BarChartProps) {
 
     function handleMouseOver(): void {
       toolTip.attr("opacity", 1);
+      toolTipBackground.attr("opacity", 1);
+    // .style("background-color", "white")
+    // .style("position", "relative")
+    // .style("width", "max-content")
+    // .style("border", "1px")
+    // .style("border-style", "solid")
+    // .style("border-radius", "5px")
+    // .style("padding", "5px");
+
+    function handleMouseOver(): void {
+      toolTip.attr("opacity", 1);
       d3.select(this)
-        .style("stroke", barHoverColor)
-        .style("stroke-width", "2")
-        .style("opacity", 1)
+        .transition()
+        .duration(200)
+        .style("opacity", 0.8)
         .style("cursor", "pointer");
     }
 
     function handleMouseMove(e: Event, d: { x: string; y: number }): void {
+      const toolTipPaddingLeft = 15;
+      const toolTipPaddingTop = 10;
+      const [x, y] = d3.pointer(e);
+      toolTip
+        .text(`${d.y}`)
+        .attr("x", x + toolTipPaddingLeft)
+        .attr("y", y - toolTipPaddingTop);
+
+      const { width, height } = toolTip.node()?.getBBox();
+
+      const padding = 10;
+
+      toolTipBackground
+        .attr("x", x + toolTipPaddingLeft - padding / 2)
+        .attr("y", y - height - (padding + toolTipPaddingTop) / 2)
+        .attr("width", width + padding)
+        .attr("height", height + padding);
+    }
+    function handleMouseLeave(): void {
+      toolTip.attr("opacity", 0).text("");
+      toolTipBackground.attr("opacity", 0).attr("width", 0).attr("height", 0);
+      d3.select(this).transition().duration(100).style("opacity", 1);
       const [x, y] = d3.pointer(e);
       toolTip
         .text(`${d.y}`)
@@ -75,7 +117,6 @@ export default function BarChart(props: BarChartProps) {
   }
 
   function updateChart() {
-    console.log("updating chart");
     d3.select(".bar-chart").attr("width", width).attr("height", height);
 
     // scale function for y axis
@@ -92,6 +133,7 @@ export default function BarChart(props: BarChartProps) {
     for (let obj of data) {
       label.push(obj.x);
     }
+
     // scale function for x axis
     const xScale = d3
       .scaleBand()
@@ -100,6 +142,7 @@ export default function BarChart(props: BarChartProps) {
 
     const barWidth = (width - padding.left - padding.right) / data.length;
 
+    // rendering bar charts
     d3.select(".bars")
       .selectAll("rect")
       .data(data)
@@ -109,7 +152,7 @@ export default function BarChart(props: BarChartProps) {
       })
       .attr("width", barWidth - barPadding)
       .attr("height", 0)
-      .attr("y", height - padding.bottom - barPaddingBottom)
+      .attr("y", height - barPaddingBottom)
       .transition()
       .ease(d3.easeCubic)
       .delay(function (d: { x: string; y: number }, i: number): number {
@@ -134,64 +177,77 @@ export default function BarChart(props: BarChartProps) {
       .attr("rx", "3")
       .attr("fill", barColor);
 
-    const yAxis = d3.axisLeft(yScale).ticks(10);
+    const yAxis = d3.axisLeft(yScale).ticks(8);
     const xAxis = d3.axisBottom(xScale);
 
     const barChart = d3.select(".bar-chart");
 
+    // render y Axis
     barChart
       .insert("g", "g")
       .call(yAxis)
       // have to make this data to show for charts dynamic
-      .attr("transform", `translate(${padding.left}, ${padding.top})`)
+      .attr(
+        "transform",
+        `translate(${padding.left + padding.right}, ${
+          padding.top + padding.bottom
+        })`
+      )
       .attr("font-size", "0.5em")
       .attr("font-family", fontFamily)
       .attr("color", axesColor)
       .selectAll(".tick line")
       .attr("x2", width - padding.left - padding.right)
-      .attr("opacity", "0.3")
-      .attr("stroke-dasharray", "1, 1");
+      .attr("opacity", "0.5");
 
+    // render x Axis
     barChart
       .append("g")
       .call(xAxis)
       .attr(
         "transform",
-        `translate(${padding.left}, ${height - padding.bottom})`
+        `translate(${padding.left + padding.right}, ${height})`
       )
       .attr("font-size", "0.5em")
       .attr("font-family", fontFamily)
       .attr("color", axesColor)
       .selectAll(".tick text")
-      .attr("transform", "translate(-10, 3)rotate(-45)") // have to take into account the variables for rotation too
-      .style("text-anchor", "end");
+      .attr("transform", "translate(-10, 3) rotate(-30)"); // have to take into account the variables for rotation too
+
+    d3.select(".bar-chart").selectAll(".tick line").attr("y2", 0);
   }
 
   function updateLabel() {
     // add label to the chart
     d3.select(".bar-chart")
       .append("text")
-      .attr("x", padding.left - padding.left / 2)
-      .attr("y", padding.top - 5)
+      .attr(
+        "transform",
+        `translate(${padding.left}, ${
+          (height + padding.top + padding.bottom) / 2
+        }) rotate(-90)`
+      )
       .attr("fill", axesLabelColor)
       .attr("font-family", fontFamily)
       .attr("font-size", "0.8em")
+      .attr("text-anchor", "middle")
       .text(`${yAxisLabel}`);
 
     d3.select(".bar-chart")
       .append("text")
       .text(`${xAxisLabel}`)
-      .attr("x", (width - padding.left - padding.right) / 2)
-      .attr("y", height - padding.bottom / 3.5)
+      .attr("x", (width + padding.left) / 2)
+      .attr("y", height + padding.bottom)
       .attr("font-family", fontFamily)
       .attr("font-size", "0.8em")
+      .attr("text-anchor", "middle")
       .attr("fill", axesLabelColor);
   }
 
   function updateTitle() {
     d3.select(".bar-chart")
       .append("text")
-      .attr("x", (width - padding.left - padding.right) / 2)
+      .attr("x", (width + padding.left) / 2)
       .attr("y", setTitlePadding)
       .attr("font-family", fontFamily)
       .attr("font-size", setTitleSize)
