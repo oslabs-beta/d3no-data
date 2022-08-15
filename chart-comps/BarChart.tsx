@@ -20,6 +20,7 @@ export default function BarChart(props: BarChartProps) {
   const label: string[] = [];
   const width = (props.width || 700) - padding.left - padding.right; // width of the svg
   const height = (props.height || 700) - padding.top - padding.bottom; // height of the svg
+
   const barPadding = 5; // padding provided between each bar
   const barPaddingBottom = 5; // padding provided between the chart and the x-axis
   const toolTip = props.toolTip == false ? props.toolTip : true;
