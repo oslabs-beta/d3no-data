@@ -12,7 +12,7 @@ export interface ScatterChartProps {
   dotColor?: string;
   axesColor?: string;
   fontFamily?: string;
-  addLabel?: boolean;
+  addAxesLabel?: boolean;
   xAxisLabel?: string;
   yAxisLabel?: string;
   axesFontSize?: string;
