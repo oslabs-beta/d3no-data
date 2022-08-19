@@ -3,7 +3,7 @@
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
 import { LineChartProps } from "../chart-props/LineChartProps.ts";
 
-export default function LineChart(props: LineChartProps) {
+export default function LineChart2(props: LineChartProps) {
   const yLabelPadding = 20;
   const xLabelPadding = 20;
   const padding = {
@@ -32,7 +32,6 @@ export default function LineChart(props: LineChartProps) {
   const animation = props.animation || true;
   const animationDuration = props.animationDuration || 5000;
   const addLegend = props.addLegend === false ? props.addLegend : true;
-  // create datasets variable in order to incorporate more lines in the chart
   const datasets = [];
 
   // configure scale
@@ -41,9 +40,10 @@ export default function LineChart(props: LineChartProps) {
     for (let ds of receivedDatasets) {
       const tempData = [];
       for (let obj of ds.data) {
+        const values = Object.values(obj);
         tempData.push({
-          x: new Date(obj.x),
-          y: obj.y,
+          x: new Date(values[1]),
+          y: values[0],
         });
       }
       datasets.push({
@@ -110,8 +110,10 @@ export default function LineChart(props: LineChartProps) {
       .style("text-anchor", "end");
 
     // select the first g component which is the y axis in the graph
-    d3.select("g")
+    svg
+      .select("g")
       .selectAll(".tick line")
+      .attr("stroke-width", "0.5")
       .attr("y2", -height)
       .attr("opacity", "0.3");
 
@@ -127,6 +129,7 @@ export default function LineChart(props: LineChartProps) {
       .attr("font-size", axesFontSize)
       .attr("color", axesColor)
       .selectAll(".tick line")
+      .attr("stroke-width", "0.5")
       .attr("x2", width)
       .attr("opacity", "0.3");
 
@@ -262,73 +265,69 @@ export default function LineChart(props: LineChartProps) {
   }
 
   function updateLegend() {
-    if (addLegend) {
-      // need to take into account the size of the square
-      const squareSize = 20;
-      const squareHeight = 15;
-      const squareWidth = 30;
+    const squareHeight = 15;
+    const squareWidth = 30;
 
-      const legendTitle = d3.select(".line-chart").append("g");
-      for (let i = 0; i < datasets.length; i++) {
-        // parent to group the label square and the label name
-        const legendBox = legendTitle.append("g");
+    const legendTitle = d3.select(".line-chart").append("g");
+    for (let i = 0; i < datasets.length; i++) {
+      // parent to group the label square and the label name
+      const legendBox = legendTitle.append("g");
 
-        // legend box for different cateogries
-        legendBox
-          .data([datasets[i]])
-          .append("rect")
-          .attr("x", function (d) {
-            return i * squareWidth;
-          })
-          .attr("y", -squareHeight / 2)
-          .attr("width", squareWidth)
-          .attr("height", squareHeight)
-          .attr("fill", function (d) {
-            return datasets[i].color;
-          })
-          .attr("stroke", "black");
+      // legend box for different cateogries
+      legendBox
+        .data([datasets[i]])
+        .append("rect")
+        .attr("x", function (d) {
+          return i * squareWidth;
+        })
+        .attr("y", -squareHeight / 2)
+        .attr("width", squareWidth)
+        .attr("height", squareHeight)
+        .attr("fill", function (d) {
+          return datasets[i].color;
+        })
+        .attr("stroke", "black");
 
-        // must be after square / rectangle to get the area where it is at
-        legendBox
-          .data([datasets[i]])
-          .append("text")
-          .text(datasets[i].label)
-          .attr("x", function () {
-            return (
-              d3.select(this.parentNode).selectChild().node().getBBox().width *
-                (i + 1) +
-              5
-            );
-          })
-          .attr("font-family", "Verdana")
-          .attr("font-size", "0.8em")
-          .attr("text-anchor", "right")
-          .attr("alignment-baseline", "middle");
+      // must be after square / rectangle to get the area where it is at
+      legendBox
+        .data([datasets[i]])
+        .append("text")
+        .text(datasets[i].label)
+        .attr("x", function () {
+          return (
+            d3.select(this.parentNode).selectChild().node().getBBox().width *
+              (i + 1) +
+            5
+          );
+        })
+        .attr("font-family", "Verdana")
+        .attr("font-size", "0.8em")
+        .attr("text-anchor", "right")
+        .attr("alignment-baseline", "middle");
 
-        legendBox.attr("transform", function () {
-          const childrenArray = d3
-            .select(this.parentNode)
-            .selectChildren()
-            .nodes();
-          return `translate(${
-            childrenArray[childrenArray.length - 1]?.getBBox().width * i
-          }, 0)`;
-        });
-      }
-
-      legendTitle.attr("transform", function () {
-        const legendWidth = d3.select(this).node()?.getBBox().width;
-        // to center the legends
+      legendBox.attr("transform", function () {
+        const childrenArray = d3
+          .select(this.parentNode)
+          .selectChildren()
+          .nodes();
         return `translate(${
-          (width +
-            padding.left +
-            padding.right -
-            legendWidth +
-            xLabelPadding * 2) /
-          2
-        }, ${padding.top - 10})`;
+          childrenArray[childrenArray.length - 1]?.getBBox().width * i
+        }, 0)`;
       });
     }
+
+    legendTitle.attr("transform", function () {
+      const legendWidth = d3.select(this).node()?.getBBox().width;
+      // to center the legends
+      return `translate(${
+        (width +
+          padding.left +
+          padding.right -
+          legendWidth +
+          xLabelPadding * 2) /
+        2
+      }, ${padding.top - 10})`;
+    });
   }
 
   function updateTitle() {
@@ -352,7 +351,7 @@ export default function LineChart(props: LineChartProps) {
       .attr("font-size", axesLabelSize)
       .attr(
         "transform",
-        `translate(${padding.left / 2}, ${
+        `translate(${xLabelPadding}, ${
           (height + padding.bottom + padding.top) / 2
         }) rotate(-90)`
       )
@@ -376,13 +375,15 @@ export default function LineChart(props: LineChartProps) {
     if (addLabel) {
       updateLabel();
     }
-    if (updateTooltip) {
-      updateTooltip();
+    if (addLegend) {
+      updateLegend();
     }
     if (addTitle) {
       updateTitle();
     }
-    updateLegend();
+    if (addTooltip) {
+      updateTooltip();
+    }
   }, []);
 
   return (

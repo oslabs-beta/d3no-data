@@ -11,6 +11,7 @@ export interface LineChartProps {
       y: number;
     }[];
   }[];
+  type?: string;
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;
