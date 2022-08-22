@@ -4,7 +4,7 @@ import { IS_BROWSER } from "$fresh/runtime.ts";
 import { tw } from "@twind";
 import * as d3 from "d3";
 import { useEffect, useState }from "preact/hooks";
-import {parse} from "parse";
+import { parse } from "parse";
 import { ChoroplethProps } from "../chart-props/ChoroplethProps.ts";
 import * as mod from "https://deno.land/std@0.95.0/io/mod.ts";
 
@@ -139,7 +139,6 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
               
             </svg>
             <div id ="tooltip"></div>
-            
     </Fragment>  
   )
 }
