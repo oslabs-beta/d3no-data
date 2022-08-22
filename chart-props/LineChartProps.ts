@@ -1,4 +1,8 @@
 export interface LineChartProps {
+  data?: {
+    x: Date;
+    y: number;
+  }[];
   datasets?: {
     label: string;
     color: string;
@@ -7,6 +11,7 @@ export interface LineChartProps {
       y: number;
     }[];
   }[];
+  type?: string;
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;
@@ -14,7 +19,7 @@ export interface LineChartProps {
   width?: number;
   height?: number;
   axesColor?: string;
-  addAxesLabel?: boolean;
+  addLabel?: boolean;
   axesFontSize?: string;
   xAxisLabel?: string;
   yAxisLabel?: string;
@@ -26,7 +31,6 @@ export interface LineChartProps {
   fontFamily?: string;
   addTitle?: boolean;
   setTitle?: string;
-  setTitleSize?: string;
   setTitleColor?: string;
   addLegend?: boolean;
 }

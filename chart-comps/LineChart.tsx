@@ -1,9 +1,9 @@
 // deno-lint-ignore-file
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { LineChartProps } from "../ChartProps/LineChartProps.ts";
+import { LineChartProps } from "../chart-props/LineChartProps.ts";
 
-export default function LineChart(props: LineChartProps) {
+export default function LineChart2(props: LineChartProps) {
   const yLabelPadding = 20;
   const xLabelPadding = 20;
   const padding = {
@@ -23,7 +23,7 @@ export default function LineChart(props: LineChartProps) {
   const axesLabelSize = props.axesLabelSize || "0.8em";
   const axesColor = props.axesColor || "#4D908E";
   const axesFontSize = props.axesFontSize || "0.5em";
-  const addAxesLabel = props.addAxesLabel == false ? props.addAxesLabel : false;
+  const addLabel = props.addLabel || false;
   const addTooltip = props.addTooltip === false ? false : true;
   const addTitle = props.addTitle || false;
   const setTitle = props.setTitle || "TITLE";
@@ -32,7 +32,6 @@ export default function LineChart(props: LineChartProps) {
   const animation = props.animation || true;
   const animationDuration = props.animationDuration || 5000;
   const addLegend = props.addLegend === false ? props.addLegend : true;
-  // create datasets variable in order to incorporate more lines in the chart
   const datasets = [];
 
   // configure scale
@@ -41,9 +40,10 @@ export default function LineChart(props: LineChartProps) {
     for (let ds of receivedDatasets) {
       const tempData = [];
       for (let obj of ds.data) {
+        const values = Object.values(obj);
         tempData.push({
-          x: new Date(obj.x),
-          y: obj.y,
+          x: new Date(values[1]),
+          y: values[0],
         });
       }
       datasets.push({
@@ -75,7 +75,7 @@ export default function LineChart(props: LineChartProps) {
           return d.y;
         })
       )
-      .range([height + padding.bottom, padding.top]);
+      .range([height + padding.bottom, padding.bottom]);
   }
 
   function updateChart() {
@@ -110,8 +110,10 @@ export default function LineChart(props: LineChartProps) {
       .style("text-anchor", "end");
 
     // select the first g component which is the y axis in the graph
-    d3.select("g")
+    svg
+      .select("g")
       .selectAll(".tick line")
+      .attr("stroke-width", "0.5")
       .attr("y2", -height)
       .attr("opacity", "0.3");
 
@@ -127,6 +129,7 @@ export default function LineChart(props: LineChartProps) {
       .attr("font-size", axesFontSize)
       .attr("color", axesColor)
       .selectAll(".tick line")
+      .attr("stroke-width", "0.5")
       .attr("x2", width)
       .attr("opacity", "0.3");
 
@@ -150,11 +153,12 @@ export default function LineChart(props: LineChartProps) {
           d3
             .line()
             .x(function (d) {
-              // console.log(d);
-              return xScale(d.x);
+              const a = Object.keys(d);
+              return xScale(d[a[0]]);
             })
             .y(function (d) {
-              return yScale(d.y);
+              const a = Object.keys(d);
+              return yScale(d[a[1]]);
             })
             .curve(d3.curveLinear)
         )
@@ -177,13 +181,34 @@ export default function LineChart(props: LineChartProps) {
     const toolTip = d3.select(".line-chart");
 
     function handleMouseOver() {
+      const padding = 20;
       const { x, y } = d3
         .select(this)
         .attr("cursor", "pointer")
         .node()
         .getBBox();
 
-      toolTip.select(".tool-tip text").text(`${y}`);
+      toolTip
+        .select(".tool-tip text")
+        .text(`${yScale.invert(y)}`)
+        .attr("fill", "white")
+        .attr("transform", `translate(${padding / 2}, ${padding / 2})`);
+
+      toolTip
+        .select(".tool-tip rect")
+        .attr("width", function () {
+          return (
+            d3.select(this.parentNode).selectChild("text").node().getBBox()
+              .width + padding
+          );
+        })
+        .attr("height", function () {
+          return (
+            d3.select(this.parentNode).selectChild("text").node().getBBox()
+              .height + padding
+          );
+        })
+        .attr("rx", "5");
 
       toolTip
         .select(".tool-tip")
@@ -194,7 +219,12 @@ export default function LineChart(props: LineChartProps) {
     }
 
     function handleMouseLeave() {
-      toolTip.select(".tool-tip").transition().duration(200).attr("opacity", 0);
+      toolTip
+        .select(".tool-tip")
+        .transition()
+        .duration(300)
+        .attr("opacity", 0)
+        .attr("transform", `translate(${Math.random() * width}, 0)`);
     }
 
     for (let i = 0; i < datasets.length; i++) {
@@ -219,56 +249,85 @@ export default function LineChart(props: LineChartProps) {
       }
     }
 
-    toolTip.append("g").classed("tool-tip", true).attr("opacity", 0);
+    toolTip
+      .append("g")
+      .classed("tool-tip", true)
+      .attr("opacity", 0)
+      .attr("font-family", fontFamily);
     toolTip
       .select(".tool-tip")
       .append("rect")
-      .attr("fill", "green")
-      .attr("width", 50)
-      .attr("height", 20);
-    toolTip.select(".tool-tip").append("text").text("test");
+      .attr("fill", "#2d8fc0")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("transform", `translate(0, -15)`);
+    toolTip.select(".tool-tip").append("text");
   }
 
   function updateLegend() {
-    if (addLegend) {
-      // need to take into account the size of the square
-      const squareSize = 20;
+    const squareHeight = 15;
+    const squareWidth = 30;
 
-      for (let i = 0; i < datasets.length; i++) {
-        const legendTitle = d3
-          .select(".line-chart")
-          .data([datasets[i]])
-          .append("text")
-          .text(datasets[i].label)
-          .attr(
-            "x",
-            (padding.left + padding.right + width) / 2 + i * 20 + squareSize * i
-          )
-          .attr("y", padding.top)
-          .attr("font-family", "Verdana")
-          .attr("text-anchor", "right")
-          .style("alignment-baseline", "middle");
+    const legendTitle = d3.select(".line-chart").append("g");
+    for (let i = 0; i < datasets.length; i++) {
+      // parent to group the label square and the label name
+      const legendBox = legendTitle.append("g");
 
-        const legendCat = d3
-          .select(".line-chart")
-          .data([datasets[i]])
-          .append("rect")
-          .attr("x", function (d) {
-            return (
-              (padding.left + padding.right + width) / 2 +
-              i * 20 -
-              20 +
-              squareSize * i
-            );
-          })
-          .attr("y", padding.top - 10)
-          .attr("width", squareSize)
-          .attr("height", squareSize)
-          .attr("fill", function (d) {
-            return datasets[i].color;
-          });
-      }
+      // legend box for different cateogries
+      legendBox
+        .data([datasets[i]])
+        .append("rect")
+        .attr("x", function (d) {
+          return i * squareWidth;
+        })
+        .attr("y", -squareHeight / 2)
+        .attr("width", squareWidth)
+        .attr("height", squareHeight)
+        .attr("fill", function (d) {
+          return datasets[i].color;
+        })
+        .attr("stroke", "black");
+
+      // must be after square / rectangle to get the area where it is at
+      legendBox
+        .data([datasets[i]])
+        .append("text")
+        .text(datasets[i].label)
+        .attr("x", function () {
+          return (
+            d3.select(this.parentNode).selectChild().node().getBBox().width *
+              (i + 1) +
+            5
+          );
+        })
+        .attr("font-family", "Verdana")
+        .attr("font-size", "0.8em")
+        .attr("text-anchor", "right")
+        .attr("alignment-baseline", "middle");
+
+      legendBox.attr("transform", function () {
+        const childrenArray = d3
+          .select(this.parentNode)
+          .selectChildren()
+          .nodes();
+        return `translate(${
+          childrenArray[childrenArray.length - 1]?.getBBox().width * i
+        }, 0)`;
+      });
     }
+
+    legendTitle.attr("transform", function () {
+      const legendWidth = d3.select(this).node()?.getBBox().width;
+      // to center the legends
+      return `translate(${
+        (width +
+          padding.left +
+          padding.right -
+          legendWidth +
+          xLabelPadding * 2) /
+        2
+      }, ${padding.top - 10})`;
+    });
   }
 
   function updateTitle() {
@@ -292,7 +351,7 @@ export default function LineChart(props: LineChartProps) {
       .attr("font-size", axesLabelSize)
       .attr(
         "transform",
-        `translate(${padding.left / 2}, ${
+        `translate(${xLabelPadding}, ${
           (height + padding.bottom + padding.top) / 2
         }) rotate(-90)`
       )
@@ -313,16 +372,18 @@ export default function LineChart(props: LineChartProps) {
     cleanDatasets();
     configureScale();
     updateChart();
-    if (addAxesLabel) {
+    if (addLabel) {
       updateLabel();
     }
-    if (updateTooltip) {
-      updateTooltip();
+    if (addLegend) {
+      updateLegend();
     }
     if (addTitle) {
       updateTitle();
     }
-    updateLegend();
+    if (addTooltip) {
+      updateTooltip();
+    }
   }, []);
 
   return (
