@@ -1,9 +1,7 @@
 /** @jsx h */
-import { h, Fragment, render } from "../mod.ts;
-import * as d3 from "../mod.ts";
+import { h, Fragment, render, d3 } from "../mod.ts";
 import { useEffect, useState }from "../mod.ts";
 import { ChoroplethProps } from "../chart-props/ChoroplethProps.ts";
-import * as mod from "https://deno.land/std@0.95.0/io/mod.ts";
 
 export default  function ChoroplethChart(props : ChoroplethProps) { 
 
