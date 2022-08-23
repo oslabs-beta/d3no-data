@@ -23,6 +23,7 @@ export default function DonutChart(props: DonutChartProps) {
   const color = d3.interpolate(colorStart, colorEnd);
   const data = props.data || [];
   const toolTip = props.toolTip || true;
+  const innerRadius = props.innerRadius || 100;
 
   function updateChart() {
     const svg = d3
@@ -43,7 +44,7 @@ export default function DonutChart(props: DonutChartProps) {
         return Number(d.count);
       })
       .sort(null);
-    const path = d3.arc().outerRadius(radius).innerRadius(100);
+    const path = d3.arc().outerRadius(radius).innerRadius(innerRadius);
     svg
       .selectAll("path")
       .data(pie(data))
@@ -51,7 +52,7 @@ export default function DonutChart(props: DonutChartProps) {
       .attr("stroke-width", "1")
       .attr("stroke", "#277DA1")
       .attr("fill", function (d, i) {
-        return color(i / d.data.ages.length);
+        return color(i / data.length);
       })
       .transition()
       .delay(function (d, i: number): number {
@@ -65,7 +66,6 @@ export default function DonutChart(props: DonutChartProps) {
           return path(d);
         };
       });
-
     svg
       .selectAll("text")
       .data(pie(data))
