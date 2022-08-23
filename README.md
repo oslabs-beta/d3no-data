@@ -1,10 +1,12 @@
-![d3no-data-logo](https://user-images.githubusercontent.com/103704106/186263018-98f1f8d8-97e2-472e-8abc-0c4a8b15ad32.svg)
+
+<img align="right" src="https://user-images.githubusercontent.com/103704106/186263018-98f1f8d8-97e2-472e-8abc-0c4a8b15ad32.svg" height="75px" alt="the fresh logo: a sliced lemon dripping with juice">
+
 
 [homepage](https://d3nodata.deno.dev/) | [documentation](https://d3nodata.deno.dev/docs) | [deno.land](https://deno.land/x/d3nodata)
 
 ## INTRO
 
-*D3NO DATA* is a chart component library written in D3.js and Preact, designed to be a simple but fully-featured way to implement D3 in Fresh projects at the lowest possible performance cost.
+**D3NO DATA** is a chart component library written in D3.js and Preact, designed to be a simple but fully-featured way to implement D3 in Fresh projects at the lowest possible performance cost.
 
 Key Features:
 - Feature 1
