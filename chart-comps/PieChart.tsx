@@ -118,7 +118,8 @@ export default function PieChart(props: PieChartProps) {
   }, []);
 
 
-  return (   
+  return (
+    <Fragment> 
           <svg        
               style={{
                   padding: 0,
@@ -126,8 +127,7 @@ export default function PieChart(props: PieChartProps) {
               className="pie-chart"      
               >
                 
-              </svg>
-              <div id ="tooltip"></div>
-              
+            </svg>
+            <div id="tooltip"></div>    
       </Fragment>  
   );}

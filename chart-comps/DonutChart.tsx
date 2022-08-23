@@ -18,16 +18,9 @@ export default function DonutChart(props: DonutChartProps) {
   const setTitleSize = props.setTitleSize || "1em";
   const animation = props.animation == false ? false : true;
   const animationDuration = props.animationDuration || 120;
-  const colorRange = props.colorRange || [
-    "#CED89E",
-    "#F9F9C5",
-    "#6CC4A1",
-    "#AEDBCE",
-    "#76BA99",
-    "#D9F8C4",
-    "#90C8AC",
-  ];
-  const color = d3.scaleOrdinal().range(colorRange);
+  const colorStart = props.colorStart || '#cefad0';
+  const colorEnd = props.colorEnd || 'green';
+  const color = d3.interpolate(colorStart, colorEnd);
   const data = props.data || [];
   const toolTip = props.toolTip || true;
 
@@ -57,8 +50,8 @@ export default function DonutChart(props: DonutChartProps) {
       .join("path")
       .attr("stroke-width", "1")
       .attr("stroke", "#277DA1")
-      .attr("fill", function (d) {
-        return color(d.data.ages);
+      .attr("fill", function (d, i) {
+        return color(i / d.data.ages.length);
       })
       .transition()
       .delay(function (d, i: number): number {

@@ -9,7 +9,8 @@ export interface DonutChartProps {
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
-  colorRange?: string[];
+  colorStart?: string;
+  colorEnd?: string;
   fontFamily?: string;
   addTitle?: boolean;
   setTitle?: string;
