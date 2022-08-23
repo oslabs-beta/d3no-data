@@ -1,8 +1,15 @@
-// defining property for user to pass down props
 export interface BarChartProps {
   data: {
     x: string;
     y: number;
+  }[];
+  datasets?: {
+    label: string;
+    color: string;
+    data: {
+      x: string;
+      y: number;
+    }[];
   }[];
   paddingTop?: number;
   paddingBottom?: number;
@@ -27,4 +34,5 @@ export interface BarChartProps {
   setTitleSize?: string;
   setTitleColor?: string;
   setTitlePaddingTop?: number;
+  addLegend?: boolean;
 }
