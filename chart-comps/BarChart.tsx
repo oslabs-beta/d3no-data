@@ -1,8 +1,6 @@
 /** @jsx h */
 import { h, Fragment, useEffect, d3 } from "../mod.ts";
-import { BarChartProps } from "../ChartProps/BarChartProps.ts";
-
-// need to work on paddings that dynamically update to avoid overlapping with the graph
+import { BarChartProps } from "../chart-props/BarChartProps.ts";
 
 // need to work on paddings that dynamically update to avoid overlapping with the graph
 
@@ -82,7 +80,6 @@ export default function BarChart(props: BarChartProps) {
   }
 
   function updateChart() {
-<<<<<<< HEAD
     d3.select(".bar-chart")
       .attr("width", width + padding.left + padding.right + 2 * yLabelPadding)
       .attr(
@@ -91,68 +88,6 @@ export default function BarChart(props: BarChartProps) {
       );
 
     const yAxis = d3.axisLeft(yScale);
-=======
-    console.log("updating chart");
-    d3.select(".bar-chart").attr("width", width).attr("height", height);
-
-    // scale function for y axis
-    const yScale = d3
-      .scaleLinear()
-      .domain([
-        0,
-        data.reduce((obj1, obj2) => {
-          return obj1.y > obj2.y ? obj1 : obj2;
-        }).y,
-      ])
-      .range([height - padding.top - padding.bottom, 0]);
-
-    for (let obj of data) {
-      label.push(obj.x);
-    }
-    // scale function for x axis
-    const xScale = d3
-      .scaleBand()
-      .domain(label)
-      .range([0, width - padding.left - padding.right + barPaddingBottom]);
-
-    const barWidth = (width - padding.left - padding.right) / data.length;
-
-    d3.select(".bars")
-      .selectAll("rect")
-      .data(data)
-      .join("rect")
-      .attr("x", function (d: { x: string; y: number }, i: number): number {
-        return barWidth * i + padding.left + barPadding;
-      })
-      .attr("width", barWidth - barPadding)
-      .attr("height", 0)
-      .attr("y", height - padding.bottom - barPaddingBottom)
-      .transition()
-      .ease(d3.easeCubic)
-      .delay(function (d: { x: string; y: number }, i: number): number {
-        return i * animationDelay * (animation ? 1 : 0);
-      })
-      .duration(animationDuration * (animation ? 1 : 0))
-      .attr("y", function (d: { x: string; y: number }): number {
-        return (
-          yScale(d.y) -
-          padding.bottom -
-          barPaddingBottom +
-          padding.bottom +
-          padding.top
-        );
-      })
-      .attr(
-        "height",
-        function (d: { x: string; y: number }, i: number): number {
-          return height - yScale(d.y) - padding.bottom - padding.top;
-        }
-      )
-      .attr("rx", "3")
-      .attr("fill", barColor);
-
-    const yAxis = d3.axisLeft(yScale).ticks(10);
->>>>>>> e15e877 (updated bar chart)
     const xAxis = d3.axisBottom(xScale);
     yAxis.tickSizeOuter(0);
     xAxis.tickSizeOuter(0);
