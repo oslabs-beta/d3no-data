@@ -23,6 +23,7 @@ export default function DonutChart(props: DonutChartProps) {
   const color = d3.interpolate(colorStart, colorEnd);
   const data = props.data || [];
   const toolTip = props.toolTip || true;
+  const innerRadius = props.innerRadius || 100;
 
   function updateChart() {
     const svg = d3
@@ -43,7 +44,7 @@ export default function DonutChart(props: DonutChartProps) {
         return Number(d.count);
       })
       .sort(null);
-    const path = d3.arc().outerRadius(radius).innerRadius(100);
+    const path = d3.arc().outerRadius(radius).innerRadius(innerRadius);
     svg
       .selectAll("path")
       .data(pie(data))
