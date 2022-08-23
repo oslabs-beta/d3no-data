@@ -1,7 +1,7 @@
 /** @jsx h */
-import { h, Fragment, render, d3 } from "../mod.ts;
-import { useEffect, useState }from "preact/hooks";
-import { ChoroplethProps } from "../ChartSchema.ts";
+import { h, Fragment, render, d3 } from "../mod.ts";
+import { useEffect, useState }from "../mod.ts";
+import { ChoroplethProps } from "../chart-props/ChoroplethProps.ts";
 
 export default  function ChoroplethChart(props : ChoroplethProps) { 
 
