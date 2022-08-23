@@ -51,7 +51,7 @@ export default function DonutChart(props: DonutChartProps) {
       .attr("stroke-width", "1")
       .attr("stroke", "#277DA1")
       .attr("fill", function (d, i) {
-        return color(i / d.data.ages.length);
+        return color(i / data.length);
       })
       .transition()
       .delay(function (d, i: number): number {
@@ -65,7 +65,6 @@ export default function DonutChart(props: DonutChartProps) {
           return path(d);
         };
       });
-
     svg
       .selectAll("text")
       .data(pie(data))
