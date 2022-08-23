@@ -30,7 +30,7 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
     dataArr = Array.from(WorldData,(country) => country.data);
     legendArr = [];
     dataMax = Math.max(...dataArr);
-    const step = (dataMax - Math.min(...dataArr))/legendSteps;
+    step = (dataMax - Math.min(...dataArr))/legendSteps;
     legendArr.push(`<${Math.floor(step)}`)
     for (let i = 1; i < legendSteps; i++){
       legendArr.push(`${Math.floor(i*step)}`);
