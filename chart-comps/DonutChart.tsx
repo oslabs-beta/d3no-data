@@ -18,18 +18,12 @@ export default function DonutChart(props: DonutChartProps) {
   const setTitleSize = props.setTitleSize || "1em";
   const animation = props.animation == false ? false : true;
   const animationDuration = props.animationDuration || 120;
-  const colorRange = props.colorRange || [
-    "#CED89E",
-    "#F9F9C5",
-    "#6CC4A1",
-    "#AEDBCE",
-    "#76BA99",
-    "#D9F8C4",
-    "#90C8AC",
-  ];
-  const color = d3.scaleOrdinal().range(colorRange);
+  const colorStart = props.colorStart || '#cefad0';
+  const colorEnd = props.colorEnd || 'green';
+  const color = d3.interpolate(colorStart, colorEnd);
   const data = props.data || [];
   const toolTip = props.toolTip || true;
+  const innerRadius = props.innerRadius || 100;
 
   function updateChart() {
     const svg = d3
@@ -50,15 +44,15 @@ export default function DonutChart(props: DonutChartProps) {
         return Number(d.count);
       })
       .sort(null);
-    const path = d3.arc().outerRadius(radius).innerRadius(100);
+    const path = d3.arc().outerRadius(radius).innerRadius(innerRadius);
     svg
       .selectAll("path")
       .data(pie(data))
       .join("path")
       .attr("stroke-width", "1")
       .attr("stroke", "#277DA1")
-      .attr("fill", function (d) {
-        return color(d.data.ages);
+      .attr("fill", function (d, i) {
+        return color(i / data.length);
       })
       .transition()
       .delay(function (d, i: number): number {
@@ -72,7 +66,6 @@ export default function DonutChart(props: DonutChartProps) {
           return path(d);
         };
       });
-
     svg
       .selectAll("text")
       .data(pie(data))

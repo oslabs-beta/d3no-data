@@ -241,7 +241,6 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
             >
               
             </svg>
-            
     </Fragment>  
   )
 }

@@ -1,7 +1,15 @@
 export interface ScatterChartProps {
-  data: {
+  data?: {
     x: number;
     y: number;
+  }[];
+  datasets?: {
+    label: string;
+    color: string;
+    data: {
+      x: Date;
+      y: number;
+    }[];
   }[];
   width?: number;
   height?: number;
@@ -9,20 +17,20 @@ export interface ScatterChartProps {
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
-  dotColor?: string;
   axesColor?: string;
   fontFamily?: string;
-  addLabel?: boolean;
+  addAxesLabel?: boolean;
   xAxisLabel?: string;
   yAxisLabel?: string;
   axesFontSize?: string;
   axesLabelColor?: string;
+  addTooltip?: boolean;
   addTitle?: boolean;
   setTitle?: string;
   setTitleSize?: string;
   setTitleColor?: string;
   animation?: boolean;
   animationDuration?: number;
-  dotHoverColor?: string;
   dotSize?: string;
+  addLegend?: boolean;
 }
