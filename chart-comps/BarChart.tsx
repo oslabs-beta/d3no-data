@@ -37,10 +37,10 @@ export default function BarChart(props: BarChartProps) {
   const addLegend = props.addLegend == false ? props.addLegend : true;
 
   const receivedDatasets = props.datasets || [];
-  const datasets = [];
+  const datasets = []; // cleaned datasets are stored here
 
   let drawPoints = [];
-  function cleanDatasets() {
+  function cleanDatasets() { //cleans data sets by reading from receivedDatasets
     for (let ds of receivedDatasets) {
       const tempData = [];
       for (let obj of ds.data) {
@@ -76,7 +76,7 @@ export default function BarChart(props: BarChartProps) {
       return obj1.y < obj2.y ? obj1 : obj2;
     });
 
-    yScale = d3.scaleLinear().domain([minObj.y, maxObj.y]).range([height, 0]);
+    yScale = d3.scaleLinear().domain([0, maxObj.y]).range([height, 0]);
   }
 
   function updateChart() {

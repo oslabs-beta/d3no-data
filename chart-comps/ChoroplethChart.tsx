@@ -20,13 +20,17 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
   const title = props.title || 'Example Title';
   const scale = props.scale || 100;
   const center = props.center || [0,0];
+  const fontSize = props.fontSize || '10px';
+  const widthPadding = props.widthPadding || 0;
+  const heightPadding = props.heightPadding || 0;
+  const paddingTitle = props.paddingTitle || 15;
   let legendArr:string[], dataArr:number[], dataMax:number, step:number;
 
   if (WorldData){
     dataArr = Array.from(WorldData,(country) => country.data);
     legendArr = [];
     dataMax = Math.max(...dataArr);
-    const step = (dataMax - Math.min(...dataArr))/legendSteps;
+    step = (dataMax - Math.min(...dataArr))/legendSteps;
     legendArr.push(`<${Math.floor(step)}`)
     for (let i = 1; i < legendSteps; i++){
       legendArr.push(`${Math.floor(i*step)}`);
@@ -74,7 +78,7 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
     const projection = d3.geoMercator();
       projection.scale([scale])
       projection.center(center)
-      .translate([width/2, height/2 ])
+      .translate([width/2 + widthPadding, height/2 + heightPadding ])
     const svgPath = d3.geoPath() //given a GeoJson obj, generates SVG path
     .projection(projection); //sets the current projection to specificied projection
 
@@ -164,7 +168,7 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
             return `${res.features[i].properties.name} has ${WorldData[searchIndex].data}`
           })
           .style("font-family","Arial")
-          .style("font-size",`36px`)
+          .style("font-size",fontSize)
           .attr("id",function (d:number, i:number){
             return res.features[i].properties.name;
           })
@@ -212,7 +216,7 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
       const titleRef = d3.select(".ChoroplethMap")
       .append("text")
       .attr("x", (width / 2))             
-      .attr("y", 0+15) // padding from top for title
+      .attr("y", paddingTitle) // padding from top for title
       .attr("text-anchor", "middle")  
       .attr("font-size", "16px") 
       .attr("text-decoration", "underline")
