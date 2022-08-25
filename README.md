@@ -28,7 +28,7 @@ The documentation is available [on the website](https://d3nodata.deno.dev/docs).
 <br/> *picture of import code*
 
 3) Implement the component where you want it within your web app built in Fresh
-<br/> *Ex: <> \<Your Header /> <BarChart data={data} /> </>*
+<br/> *Ex: <> \<Your Header /> \<BarChart datasets=\[{dataset}] /> </>*
 <br/> *picture of the component nested in JSX*
 
 4) Pass your data in the way specified in our documentation for the chart you're using
