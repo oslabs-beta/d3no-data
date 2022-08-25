@@ -21,7 +21,7 @@
 
 </div>
 
-## INTRO
+## Intro
 
 **D3NO DATA** is a chart component library written in D3.js and Preact, designed to be a simple but fully-featured way to implement D3 in Fresh projects at the lowest possible performance cost.
 
@@ -32,11 +32,11 @@ Key Features:
 - Entire feature set of D3 through the imported components
 - Efficient utilization of Preact to render changes to input data or parameters
 
-## DOCUMENTATION
+## Documentation
 
 The documentation is available [on the website](https://d3nodata.deno.dev/docs).
 
-## GETTING STARTED (for Fresh)
+## Getting Started (for Fresh)
 
 1) Look through our site to determine the kind of chart you want to use and find its import link
 
@@ -64,8 +64,10 @@ The documentation is available [on the website](https://d3nodata.deno.dev/docs).
   <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/4.chart-rendered.gif" width="700px"/>
 </p>
 
+## Contributing
+As an open source project under OSLabs we are always looking for contribution to improve the product. For more information please visit our [contributing documention](https://github.com/oslabs-beta/d3no-data/blob/main/CONTRIBUTING.md). 
 
-## CONTRIBUTORS
+## Contributors
 
 Nikolajs Veidis @ [LinkedIn](https://www.linkedin.com/in/nikolajsveidis/) | [Github](https://github.com/nikolajsvv)
 <br/>
