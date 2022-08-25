@@ -36,22 +36,35 @@ Key Features:
 
 The documentation is available [on the website](https://d3nodata.deno.dev/docs).
 
-## GETTING STARTED
+## GETTING STARTED (for Fresh)
 
-1) Look through our site to determine the kind of chart you want to use and find its import link 
-<br/> *picture of site & documentation*
+1) Look through our site to determine the kind of chart you want to use and find its import link
 
-2) Import the chart you want from our library, hosted at deno.land, into your project 
-<br/> *picture of import code*
+2) Create an island 
 
-3) Implement the component where you want it within your web app built in Fresh
-<br/> *Ex: <> \<Your Header /> \<BarChart datasets=\[{dataset}] /> </>*
-<br/> *picture of the component nested in JSX*
+<p align="center">
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/1.create-island.gif" width="200px" margin="auto"/>
+</p>
 
-4) Pass your data in the way specified in our documentation for the chart you're using
-<br/> *picture of a data set getting passed into the component as props*
-<br/> *picture of the chart with default properties rendering the user data*
+3) Import the chart you want from our library, hosted at deno.land, into the island and pass the datasets into the imported chart component
 
-5) If necessary, modify the appearance of the chart to fit the design of your application!
-<br/> *picture of the code required for passing in to fit the appearance of the demo website in the screenshot (font, color scheme, size)*
-<br/> *picture of the chart itself fitting in well with the simple demo application*
+<p align="center">
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/temp_documentation/gifs/2.import-chart.gif" width="800px"/>
+</p>
+
+4) Render the chart on the page by importing the island
+
+<p align="center">
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/3.import-island.gif" width="800px"/>
+</p>
+
+5) The chart should be rendered and if necessary, modify the appearance of the chart to fit the design of your application!
+
+<p align="center">
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/4.chart-rendered.gif" width="800px"/>
+</p>
+
+
+## CONTRIBUTORS
+
+Nikolajs Veidis @ LinkedIn(https://designs.ai/colors) | Github()
