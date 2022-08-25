@@ -49,19 +49,19 @@ The documentation is available [on the website](https://d3nodata.deno.dev/docs).
 3) Import the chart you want from our library, hosted at deno.land, into the island and pass the datasets into the imported chart component
 
 <p align="center">
-  <img src="https://github.com/oslabs-beta/d3no-data/blob/temp_documentation/gifs/2.import-chart.gif" width="800px"/>
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/temp_documentation/gifs/2.import-chart.gif" width="700px"/>
 </p>
 
 4) Render the chart on the page by importing the island
 
 <p align="center">
-  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/3.import-island.gif" width="800px"/>
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/3.import-island.gif" width="700px"/>
 </p>
 
 5) The chart should be rendered and if necessary, modify the appearance of the chart to fit the design of your application!
 
 <p align="center">
-  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/4.chart-rendered.gif" width="800px"/>
+  <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/4.chart-rendered.gif" width="700px"/>
 </p>
 
 
