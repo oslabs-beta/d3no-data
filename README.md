@@ -67,4 +67,12 @@ The documentation is available [on the website](https://d3nodata.deno.dev/docs).
 
 ## CONTRIBUTORS
 
-Nikolajs Veidis @ LinkedIn(https://designs.ai/colors) | Github()
+Nikolajs Veidis @ [LinkedIn](https://www.linkedin.com/in/nikolajsveidis/) | [Github](https://github.com/nikolajsvv)
+<br/>
+Jon Garber @ [Linkedin](https://www.linkedin.com/in/jonathon-garber-5647b0215/) | [Github](https://github.com/Jgarber2675)
+<br/>
+David Kagan @ [Linkedin](https://www.linkedin.com/in/david-kagan07/) | [Github](https://github.com/DKagan07)
+<br/>
+Evie Wylie @ [Linkedin](https://www.linkedin.com/in/evie-wylie/) | [Github](https://github.com/aw1ld3v13)
+<br/>
+Quoc Do @ [Linkedin]() | [Github](https://github.com/swittuth)
