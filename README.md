@@ -30,8 +30,8 @@
 Key Features:
 - Fully modular, lightweight charts with only one introduced dependency: D3
 - A variety of charts, accepting one or multiple data sets where appropriate
-- Customizable chart appearance, with default parameters to make it simpler to "plug n' play"
 - Entire feature set of D3 through the imported components
+- Customizable chart appearance, with default parameters to make it simpler to "plug n' play"
 - Efficient utilization of Preact to render changes to input data or parameters
 
 ## Documentation
@@ -40,34 +40,34 @@ The documentation is available [on the website](https://d3nodata.deno.dev/docs).
 
 ## Getting Started (for Fresh)
 
-1) Look through our site to determine the kind of chart you want to use and find its import link
+1) Look through our site to determine the kind of chart you want to use and find its import link at the top of its documentation page.
 
-2) Create an island 
+2) Create an island or add the import link to an existing one.
 
 <p align="center">
   <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/1.create-island.gif" width="200px" margin="auto"/>
 </p>
 
-3) Import the chart you want from our library, hosted at deno.land, into the island and pass the datasets into the imported chart component
+3) Import the chart you want from our library, hosted at deno.land, into the island and pass the datasets into the imported chart component.
 
 <p align="center">
   <img src="https://github.com/oslabs-beta/d3no-data/blob/temp_documentation/gifs/2.import-chart.gif" width="700px"/>
 </p>
 
-4) Render the chart on the page by importing the island
+4) Render the chart on any page by importing the island.
 
 <p align="center">
   <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/3.import-island.gif" width="700px"/>
 </p>
 
-5) The chart should be rendered and if necessary, modify the appearance of the chart to fit the design of your application!
+5) The chart will be rendered. You can modify the appearance of the chart to fit the design of your application!
 
 <p align="center">
   <img src="https://github.com/oslabs-beta/d3no-data/blob/main/gifs/4.chart-rendered.gif" width="700px"/>
 </p>
 
 ## Contributing
-As an open source project under OSLabs we are always looking for contribution to improve the product. For more information please visit our [contributing documention](https://github.com/oslabs-beta/d3no-data/blob/main/CONTRIBUTING.md). 
+As an open source project, we are always open to contributors wanting to improve the library. For more information, please visit our [contributing documentation](https://github.com/oslabs-beta/d3no-data/blob/main/CONTRIBUTING.md). 
 
 ## Contributors
 
