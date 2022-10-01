@@ -1,5 +1,14 @@
 <p align="center" id="top"><img src="https://user-images.githubusercontent.com/103704106/186263018-98f1f8d8-97e2-472e-8abc-0c4a8b15ad32.svg"></img></p>
 
+
+
+<div align="center">
+  <a name="stars"><img src="https://img.shields.io/github/stars/oslabs-beta/d3no-data?style=for-the-badge"></a>
+  <a name="forks"><img src="https://img.shields.io/github/forks/oslabs-beta/d3no-data?logoColor=green&style=for-the-badge"></a>
+  <a name="contributions"><img src="https://img.shields.io/github/contributors/oslabs-beta/d3no-data?logoColor=green&style=for-the-badge"></a>
+  <a name="license"><img src="https://img.shields.io/github/license/oslabs-beta/d3no-data?style=for-the-badge"></a>
+</div>
+
 <p align="center">
   <a href="https://d3nodata.deno.dev/">
     homepage
@@ -13,13 +22,6 @@
     deno.land
   </a>
 </p>
-
-<div align="center">
-  <a name="stars"><img src="https://img.shields.io/github/stars/oslabs-beta/d3no-data?style=for-the-badge"></a>
-  <a name="forks"><img src="https://img.shields.io/github/forks/oslabs-beta/d3no-data?logoColor=green&style=for-the-badge"></a>
-  <a name="contributions"><img src="https://img.shields.io/github/contributors/oslabs-beta/d3no-data?logoColor=green&style=for-the-badge"></a>
-  <a name="license"><img src="https://img.shields.io/github/license/oslabs-beta/d3no-data?style=for-the-badge"></a>
-</div>
 
 ## Intro
 
@@ -69,12 +71,12 @@ As an open source project under OSLabs we are always looking for contribution to
 
 ## Contributors
 
-Nikolajs Veidis @ [LinkedIn](https://www.linkedin.com/in/nikolajsveidis/) | [Github](https://github.com/nikolajsvv)
-<br/>
-Jon Garber @ [Linkedin](https://www.linkedin.com/in/jonathon-garber-5647b0215/) | [Github](https://github.com/Jgarber2675)
-<br/>
 David Kagan @ [Linkedin](https://www.linkedin.com/in/david-kagan07/) | [Github](https://github.com/DKagan07)
 <br/>
 Evie Wylie @ [Linkedin](https://www.linkedin.com/in/evie-wylie/) | [Github](https://github.com/aw1ld3v13)
 <br/>
-Quoc Do @ [Linkedin]() | [Github](https://github.com/swittuth)
+Jon Garber @ [Linkedin](https://www.linkedin.com/in/jonathon-garber-5647b0215/) | [Github](https://github.com/Jgarber2675)
+<br/>
+Nikolajs Veidis @ [LinkedIn](https://www.linkedin.com/in/nikolajsveidis/) | [Github](https://github.com/nikolajsvv)
+<br/>
+Quoc Do @ [Linkedin](https://www.linkedin.com/in/dlaquoc/) | [Github](https://github.com/swittuth)
