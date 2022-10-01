@@ -15,10 +15,10 @@
 </p>
 
 <div align="center">
-    
-![GitHub Repo stars](https://img.shields.io/github/stars/oslabs-beta/d3no-data?color=%239ae17b&label=stars&style=flat-square)
-![GitHub contributors](https://img.shields.io/github/contributors/oslabs-beta/d3no-data?color=%239d65c9&style=flat-square)
-
+  <a name="stars"><img src="https://img.shields.io/github/stars/oslabs-beta/d3no-data?style=for-the-badge"></a>
+  <a name="forks"><img src="https://img.shields.io/github/forks/oslabs-beta/d3no-data?logoColor=green&style=for-the-badge"></a>
+  <a name="contributions"><img src="https://img.shields.io/github/contributors/oslabs-beta/d3no-data?logoColor=green&style=for-the-badge"></a>
+  <a name="license"><img src="https://img.shields.io/github/license/oslabs-beta/d3no-data?style=for-the-badge"></a>
 </div>
 
 ## Intro
