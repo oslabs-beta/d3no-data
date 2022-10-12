@@ -1,5 +1,4 @@
-/** @jsx h */
-import { h, useEffect, Fragment, d3 } from "../mod.ts";
+import { useEffect, d3 } from "../mod.ts";
 import { DonutChartProps } from "../chart-props/DonutChartProps.ts";
 
 export default function DonutChart(props: DonutChartProps) {
