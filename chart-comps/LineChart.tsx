@@ -1,6 +1,4 @@
-// deno-lint-ignore-file
-/** @jsx h */
-import { h, Fragment, useEffect, d3 } from "../mod.ts";
+import { useEffect, d3 } from "../mod.ts";
 import { LineChartProps } from "../chart-props/LineChartProps.ts";
 
 export default function LineChart2(props: LineChartProps) {

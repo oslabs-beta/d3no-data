@@ -1,5 +1,4 @@
-/** @jsx h */
-import { h, Fragment, useEffect, d3 } from "../mod.ts";
+import { useEffect, d3 } from "../mod.ts";
 import { BarChartProps } from "../chart-props/BarChartProps.ts";
 
 // need to work on paddings that dynamically update to avoid overlapping with the graph

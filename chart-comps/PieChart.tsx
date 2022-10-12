@@ -1,5 +1,4 @@
-/** @jsx h */
-import { h, Fragment, useEffect, d3 } from "../mod.ts";
+import { useEffect, d3 } from "../mod.ts";
 import { PieChartProps } from "../chart-props/PieChartProps.ts";
 
 // exporting PieChart
