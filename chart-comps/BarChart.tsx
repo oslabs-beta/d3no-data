@@ -395,7 +395,7 @@ export default function BarChart(props: BarChartProps) {
   }, []);
 
   return (
-    <Fragment>
+    <>
       <div className="chart-container">
         <svg className="bar-chart">
           <g>
@@ -403,6 +403,6 @@ export default function BarChart(props: BarChartProps) {
           </g>
         </svg>
       </div>
-    </Fragment>
+    </>
   );
 }

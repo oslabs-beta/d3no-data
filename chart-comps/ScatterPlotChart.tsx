@@ -346,10 +346,10 @@ export default function ScatterPlotChart(props: ScatterChartProps) {
   }, []);
 
   return (
-    <Fragment>
+    <>
       <div className="chart-container">
         <svg className="scatter-chart"></svg>
       </div>
-    </Fragment>
+    </>
   );
 }
