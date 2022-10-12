@@ -385,10 +385,10 @@ export default function LineChart2(props: LineChartProps) {
   }, []);
 
   return (
-    <Fragment>
+    <>
       <div className="chart-container">
         <svg className="line-chart"></svg>
       </div>
-    </Fragment>
+    </>
   );
 }

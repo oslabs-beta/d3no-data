@@ -141,10 +141,10 @@ export default function DonutChart(props: DonutChartProps) {
   }, []);
 
   return (
-    <Fragment>
+    <>
       <div className="chart-container">
         <svg className="donut-chart"></svg>
       </div>
-    </Fragment>
+    </>
   );
 }

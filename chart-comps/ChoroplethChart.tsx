@@ -231,7 +231,7 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
     
     
   return (    
-    <Fragment>
+    <>
         <svg        
             style={{
                 padding: 0,
@@ -240,6 +240,6 @@ export default  function ChoroplethChart(props : ChoroplethProps) {
             >
               
             </svg>
-    </Fragment>  
+    </>  
   )
 }
